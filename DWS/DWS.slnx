@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/API/">
+    <Project Path="../API/DWS.API/DWS.API.csproj" />
+  </Folder>
+  <Folder Name="/Business/">
+    <Project Path="../Business/DWS.Facade/DWS.Facade.csproj" />
+  </Folder>
+  <Folder Name="/Library/">
+    <Project Path="../Library/DWS.Entities/DWS.Entities.csproj" />
+    <Project Path="DWS.DataAccess/DWS.DataAccess.csproj" />
+    <Project Path="DWS.Framework/DWS.Framework.csproj" />
+  </Folder>
+  <Folder Name="/Presentation/">
+    <Project Path="DWS.Web.UI/DWS.Web.UI.csproj" />
+  </Folder>
+</Solution>

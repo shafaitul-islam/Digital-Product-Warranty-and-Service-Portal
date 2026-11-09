@@ -1,0 +1,32 @@
+# Visual Studio temporary files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build output folders
+**/bin/
+**/obj/
+
+# Test results
+TestResults/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.cache
+
+# Environment and secret files
+.env
+.env.*
+**/appsettings.Development.json
+**/secrets.json
+
+# Publish output
+publish/
+*.publishsettings
+
+# Operating system files
+Thumbs.db
+.DS_Store
