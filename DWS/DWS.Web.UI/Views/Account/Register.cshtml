@@ -1,0 +1,317 @@
+﻿@model DWS.Web.UI.Models.ViewModels.RegisterViewModel
+
+@{
+    // Sets the page title displayed in the browser.
+    ViewData["Title"] = "Create Account";
+}
+
+<style>
+    /* Main registration page background and alignment. */
+    .register-page {
+        min-height: calc(100vh - 140px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 45px 15px;
+        background: #f3f6fc;
+    }
+
+    /* Main card containing branding and registration form. */
+    .register-card {
+        width: 100%;
+        max-width: 1000px;
+        background: #ffffff;
+        border: none;
+        border-radius: 22px;
+        overflow: hidden;
+        box-shadow: 0 15px 50px rgba(20, 40, 80, 0.10);
+    }
+
+    /* Left-side branding panel. */
+    .brand-panel {
+        background: linear-gradient(145deg, #10264e, #2456a6);
+        color: white;
+        padding: 55px 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    /* Application logo design. */
+    .brand-logo {
+        width: 65px;
+        height: 65px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.16);
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        margin-bottom: 30px;
+    }
+
+    .brand-panel h2 {
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 1.35;
+        margin-bottom: 18px;
+    }
+
+    .brand-description {
+        color: #d6e2f7;
+        line-height: 1.8;
+        font-size: 15px;
+    }
+
+    /* Feature list on the branding panel. */
+    .brand-feature {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 23px;
+        color: #eef4ff;
+        font-size: 14px;
+    }
+
+    .feature-check {
+        width: 25px;
+        height: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.18);
+        font-size: 13px;
+    }
+
+    /* Right-side registration form panel. */
+    .form-panel {
+        padding: 48px 55px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #263650;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    /* Registration input styling. */
+    .register-input {
+        min-height: 48px;
+        border: 1px solid #dce3ee;
+        border-radius: 10px;
+        padding: 11px 14px;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+    .register-input:focus {
+        border-color: #3569d4;
+        box-shadow: 0 0 0 4px rgba(53, 105, 212, 0.10);
+    }
+
+    /* Main registration button. */
+    .register-button {
+        min-height: 50px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(100deg, #2456b5, #3978e8);
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        transition: all 0.2s ease;
+    }
+
+    .register-button:hover {
+        background: linear-gradient(100deg, #194595, #2865d0);
+        transform: translateY(-1px);
+        box-shadow: 0 7px 18px rgba(37, 87, 180, 0.22);
+    }
+
+    .form-heading {
+        color: #172b4d;
+        font-weight: 750;
+        font-size: 29px;
+    }
+
+    .form-subheading {
+        color: #7b879b;
+        font-size: 14px;
+    }
+
+    .login-link {
+        color: #285fc0;
+        font-weight: 650;
+        text-decoration: none;
+    }
+
+    .login-link:hover {
+        text-decoration: underline;
+    }
+
+    .validation-message {
+        font-size: 12px;
+    }
+</style>
+
+<div class="register-page">
+    <div class="register-card">
+
+        <div class="row g-0">
+
+            <!-- Left panel: Introduces the Digital Warranty System. -->
+            <div class="col-lg-5 brand-panel">
+
+                <div class="brand-logo">DWS</div>
+
+                <h2>Warranty care, made simple.</h2>
+
+                <p class="brand-description">
+                    Create your account and manage your product warranties
+                    and service requests from one convenient place.
+                </p>
+
+                <!-- Highlights the main application features. -->
+                <div class="brand-feature">
+                    <span class="feature-check">✓</span>
+                    <span>Register your products easily</span>
+                </div>
+
+                <div class="brand-feature">
+                    <span class="feature-check">✓</span>
+                    <span>Track your warranty information</span>
+                </div>
+
+                <div class="brand-feature">
+                    <span class="feature-check">✓</span>
+                    <span>Request product servicing</span>
+                </div>
+
+                <div class="brand-feature">
+                    <span class="feature-check">✓</span>
+                    <span>Access your service history</span>
+                </div>
+
+            </div>
+
+            <!-- Right panel: Customer registration form. -->
+            <div class="col-lg-7 form-panel">
+
+                <div class="mb-4">
+                    <span class="badge rounded-pill text-bg-primary mb-3">
+                        CUSTOMER REGISTRATION
+                    </span>
+
+                    <h2 class="form-heading">Create your account</h2>
+
+                    <p class="form-subheading">
+                        Enter your details to get started with DWS.
+                    </p>
+                </div>
+
+                <!-- Sends registration information to AccountController. -->
+                <form asp-controller="Account"
+                      asp-action="Register"
+                      method="post">
+
+                    <!-- Displays registration validation errors. -->
+                    <div asp-validation-summary="ModelOnly"
+                         class="text-danger validation-message mb-3">
+                    </div>
+
+                    <!-- Full name field. -->
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label"></label>
+
+                        <input asp-for="FullName"
+                               class="form-control register-input"
+                               placeholder="Enter your full name" />
+
+                        <span asp-validation-for="FullName"
+                              class="text-danger validation-message">
+                        </span>
+                    </div>
+
+                    <!-- Email address field. -->
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+
+                        <input asp-for="Email"
+                               class="form-control register-input"
+                               placeholder="example@email.com" />
+
+                        <span asp-validation-for="Email"
+                              class="text-danger validation-message">
+                        </span>
+                    </div>
+
+                    <!-- Phone number field. -->
+                    <div class="mb-3">
+                        <label asp-for="PhoneNumber" class="form-label"></label>
+
+                        <input asp-for="PhoneNumber"
+                               class="form-control register-input"
+                               placeholder="Enter your phone number" />
+
+                        <span asp-validation-for="PhoneNumber"
+                              class="text-danger validation-message">
+                        </span>
+                    </div>
+
+                    <!-- Password and confirmation fields. -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Password" class="form-label"></label>
+
+                            <input asp-for="Password"
+                                   class="form-control register-input"
+                                   placeholder="Create password" />
+
+                            <span asp-validation-for="Password"
+                                  class="text-danger validation-message">
+                            </span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ConfirmPassword"
+                                   class="form-label"></label>
+
+                            <input asp-for="ConfirmPassword"
+                                   class="form-control register-input"
+                                   placeholder="Confirm password" />
+
+                            <span asp-validation-for="ConfirmPassword"
+                                  class="text-danger validation-message">
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Submits the registration form. -->
+                    <button type="submit"
+                            class="btn btn-primary register-button w-100 mt-2">
+                        Create Account →
+                    </button>
+
+                    <!-- Provides a link to the login page. -->
+                    <p class="text-center mt-4 mb-0 text-secondary">
+                        Already have an account?
+                        <a asp-controller="Account"
+                           asp-action="Login"
+                           class="login-link">
+                            Sign in
+                        </a>
+                    </p>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Loads client-side validation scripts. -->
+    <partial name="_ValidationScriptsPartial" />
+}

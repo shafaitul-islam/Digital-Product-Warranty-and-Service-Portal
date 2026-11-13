@@ -1,0 +1,170 @@
+﻿@model DWS.Web.UI.Models.ViewModels.LoginViewModel
+
+@{
+    // Sets the browser page title.
+    ViewData["Title"] = "Sign In";
+}
+
+<!-- Loads the custom login page stylesheet. -->
+<link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+
+<!-- Main login page background and layout. -->
+<div class="auth-page">
+    <div class="auth-card">
+
+        <!-- Left-side brand and information panel. -->
+        <section class="auth-brand-panel">
+
+            <!-- Application logo. -->
+            <div class="auth-logo">DWS</div>
+
+            <!-- Brand introduction. -->
+            <div class="auth-brand-content">
+                <span class="auth-tagline">DIGITAL WARRANTY & SERVICE</span>
+
+                <h1 class="auth-brand-title">
+                    Welcome Back!
+                    <br />
+                    Your warranty journey starts here.
+                </h1>
+
+                <p class="auth-brand-description">
+                    Manage your registered products, track warranties,
+                    and request product services from one convenient place.
+                </p>
+
+                <!-- Highlights the main application features. -->
+                <ul class="auth-feature-list">
+                    <li>
+                        <span class="auth-check">✓</span>
+                        Manage your products easily
+                    </li>
+                    <li>
+                        <span class="auth-check">✓</span>
+                        Track your warranty information
+                    </li>
+                    <li>
+                        <span class="auth-check">✓</span>
+                        Request product servicing
+                    </li>
+                    <li>
+                        <span class="auth-check">✓</span>
+                        Access your service history
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Brand footer text. -->
+            <div class="auth-brand-footer">
+                © 2026 DWS. All rights reserved.
+            </div>
+        </section>
+
+        <!-- Right-side login form panel. -->
+        <section class="auth-form-panel">
+
+            <div class="auth-form-content">
+
+                <!-- Login heading. -->
+                <span class="auth-form-badge">CUSTOMER PORTAL</span>
+
+                <h2 class="auth-title">Sign in to your account</h2>
+
+                <p class="auth-subtitle">
+                    Enter your credentials to continue.
+                </p>
+
+                <!-- Displays login validation errors. -->
+                <div asp-validation-summary="ModelOnly"
+                     class="auth-validation-summary">
+                </div>
+
+                <!-- Submits login information to AccountController. -->
+                <form asp-controller="Account"
+                      asp-action="Login"
+                      method="post"
+                      class="auth-form">
+
+                    <!-- Preserves the requested page after login. -->
+                    <input type="hidden"
+                           name="returnUrl"
+                           value="@ViewData["ReturnUrl"]" />
+
+                    <!-- Email address input. -->
+                    <div class="auth-field">
+                        <label asp-for="Email" class="auth-label">
+                            Email Address
+                        </label>
+
+                        <input asp-for="Email"
+                               type="email"
+                               class="form-control auth-input"
+                               placeholder="example@email.com"
+                               autocomplete="username" />
+
+                        <span asp-validation-for="Email"
+                              class="auth-field-error">
+                        </span>
+                    </div>
+
+                    <!-- Password input. -->
+                    <div class="auth-field">
+                        <label asp-for="Password" class="auth-label">
+                            Password
+                        </label>
+
+                        <input asp-for="Password"
+                               type="password"
+                               class="form-control auth-input"
+                               placeholder="Enter your password"
+                               autocomplete="current-password" />
+
+                        <span asp-validation-for="Password"
+                              class="auth-field-error">
+                        </span>
+                    </div>
+
+                    <!-- Remember-me option. -->
+                    <div class="auth-options">
+                        <div class="form-check">
+                            <input asp-for="RememberMe"
+                                   class="form-check-input" />
+
+                            <label asp-for="RememberMe"
+                                   class="form-check-label">
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Login submission button. -->
+                    <button type="submit" class="auth-submit">
+                        Sign In
+                        <span aria-hidden="true">→</span>
+                    </button>
+
+                </form>
+
+                <!-- Link to the customer registration page. -->
+                <div class="auth-register-link">
+                    Don't have an account?
+                    <a asp-controller="Account" asp-action="Register">
+                        Create an account
+                    </a>
+                </div>
+
+                <!-- Security information. -->
+                <div class="auth-security-note">
+                    <span aria-hidden="true">🔒</span>
+                    Your account information is securely protected.
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Loads client-side form validation scripts. -->
+    <partial name="_ValidationScriptsPartial" />
+}

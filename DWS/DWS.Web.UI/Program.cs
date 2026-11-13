@@ -2,9 +2,14 @@
 using DWS.DataAccess.Context;
 using DWS.DataAccess.DependencyInjection;
 using DWS.Entities.Models;
+using DWS.Web.UI.Seeders;
 using Microsoft.AspNetCore.Identity;
 
+// Creates the application builder.
 var builder = WebApplication.CreateBuilder(args);
+
+// Registers MVC services for Controllers and Views.
+builder.Services.AddControllersWithViews();
 
 // Reads the SQL Server connection string from appsettings.json.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
@@ -14,51 +19,67 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 // Registers the database context, repositories, and Unit of Work.
 builder.Services.AddDataAccessServices(connectionString);
 
-// Configures ASP.NET Core Identity with custom ApplicationUser and integer role IDs.
+// Configures ASP.NET Core Identity with ApplicationUser and integer-based roles.
 builder.Services
     .AddIdentity<ApplicationUser, IdentityRole<int>>(options =>
     {
-        // Requires each user account to have a unique email address.
-        options.User.RequireUniqueEmail = true;
-
-        // Configures password security requirements.
+        // Defines password security requirements.
         options.Password.RequiredLength = 8;
         options.Password.RequireDigit = true;
         options.Password.RequireLowercase = true;
         options.Password.RequireUppercase = true;
         options.Password.RequireNonAlphanumeric = false;
-    })
-    // Connects Identity to ApplicationDbContext using Entity Framework Core.
-    .AddEntityFrameworkStores<ApplicationDbContext>()
 
-    // Enables Identity token generation for account-related operations.
+        // Ensures each user has a unique email address.
+        options.User.RequireUniqueEmail = true;
+
+        // Email confirmation is not required until an email service is configured.
+        options.SignIn.RequireConfirmedEmail = false;
+    })
+    // Stores Identity users and roles in the application's SQL Server database.
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    // Enables Identity token generation.
     .AddDefaultTokenProviders();
 
-// Registers MVC controllers and Razor Views.
-builder.Services.AddControllersWithViews();
+// Configures the authentication cookie.
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    // Redirects unauthenticated users to the Login page.
+    options.LoginPath = "/Account/Login";
 
+    // Redirects unauthorized users to the Access Denied page.
+    options.AccessDeniedPath = "/Account/AccessDenied";
+
+    // Sets the authentication cookie expiration time to 60 minutes.
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+
+    // Renews the cookie expiration when the user remains active.
+    options.SlidingExpiration = true;
+});
+
+// Builds the application.
 var app = builder.Build();
 
-// Configures the HTTP request pipeline.
+// Creates the default application roles in the database.
+await RoleSeeder.SeedRolesAsync(app.Services);
+
+// Configures error handling and security headers for production.
 if (!app.Environment.IsDevelopment())
 {
-    // Redirects users to the custom error page in production.
     app.UseExceptionHandler("/Home/Error");
-
-    // Enables HTTP Strict Transport Security.
     app.UseHsts();
 }
 
 // Redirects HTTP requests to HTTPS.
 app.UseHttpsRedirection();
 
-// Enables routing for incoming HTTP requests.
+// Enables routing.
 app.UseRouting();
 
-// Enables authentication to identify logged-in users.
+// Checks the user's authentication cookie.
 app.UseAuthentication();
 
-// Enables authorization to check user permissions and roles.
+// Applies authorization rules after authentication.
 app.UseAuthorization();
 
 // Maps static assets such as CSS, JavaScript, and images.
