@@ -16,6 +16,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Digital Warranty &amp; Service Portal</title>
 
+    <!-- Loads the shared Light and Dark theme styles for the entire application. -->
+    <link rel="stylesheet" href="~/css/theme.css" asp-append-version="true" />
+
     <style>
             /* Removes default browser spacing from the standalone dashboard page. */
             html,
@@ -746,6 +749,120 @@
                     grid-template-columns: 1fr;
                 }
             }
+
+            /* =====================================================
+                           GLOBAL THEME INTEGRATION FOR CUSTOMER DASHBOARD
+                           These rules override the page's original fixed colors.
+                           ===================================================== */
+
+            /* Applies global theme colors to the standalone dashboard. */
+            [data-theme="light"] .dws-dashboard,
+            html:not([data-theme="dark"]) .dws-dashboard {
+                background: var(--page-bg);
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .dws-dashboard {
+                background: var(--page-bg);
+                color: var(--text-primary);
+            }
+
+            /* Updates all dashboard surfaces in both themes. */
+            [data-theme="dark"] .dws-sidebar,
+            [data-theme="dark"] .dws-topbar,
+            [data-theme="dark"] .dws-stat-card,
+            [data-theme="dark"] .dws-feature-card,
+            [data-theme="dark"] .dws-activity-panel {
+                background: var(--surface-bg);
+                border-color: var(--border-color);
+                color: var(--text-primary);
+                box-shadow: var(--card-shadow);
+            }
+
+                /* Updates sidebar branding and navigation text. */
+                [data-theme="dark"] .dws-brand,
+                [data-theme="dark"] .dws-brand-name,
+                [data-theme="dark"] .dws-topbar h1,
+                [data-theme="dark"] .dws-stat-card h3,
+                [data-theme="dark"] .dws-section-heading h2,
+                [data-theme="dark"] .dws-feature-card h3,
+                [data-theme="dark"] .dws-activity-header h2,
+                [data-theme="dark"] .dws-empty-state h3,
+                [data-theme="dark"] .dws-account-info strong,
+                [data-theme="dark"] .dws-sidebar-help strong {
+                    color: var(--text-primary);
+                }
+
+            [data-theme="dark"] .dws-nav-item {
+                color: var(--text-secondary);
+            }
+
+                [data-theme="dark"] .dws-nav-item:hover {
+                    background: var(--surface-hover);
+                    color: var(--primary-color);
+                }
+
+                [data-theme="dark"] .dws-nav-item.active {
+                    color: #ffffff;
+                }
+
+            /* Updates descriptions and supporting text. */
+            [data-theme="dark"] .dws-brand-subtitle,
+            [data-theme="dark"] .dws-menu-label,
+            [data-theme="dark"] .dws-sidebar-help p,
+            [data-theme="dark"] .dws-topbar-description,
+            [data-theme="dark"] .dws-account-info small,
+            [data-theme="dark"] .dws-stat-card p,
+            [data-theme="dark"] .dws-stat-card small,
+            [data-theme="dark"] .dws-section-heading p,
+            [data-theme="dark"] .dws-feature-card p,
+            [data-theme="dark"] .dws-empty-state p,
+            [data-theme="dark"] .dws-dashboard-footer {
+                color: var(--text-secondary);
+            }
+
+            /* Updates secondary dashboard panels. */
+            [data-theme="dark"] .dws-sidebar-help,
+            [data-theme="dark"] .dws-empty-state {
+                background: var(--surface-secondary);
+                border-color: var(--border-color);
+            }
+
+            /* Keeps the logout control readable in dark mode. */
+            [data-theme="dark"] .dws-logout {
+                background: var(--surface-secondary);
+                color: var(--text-primary);
+                border-color: var(--border-color);
+            }
+
+                [data-theme="dark"] .dws-logout:hover {
+                    background: var(--surface-hover);
+                    color: var(--danger-color);
+                }
+
+            /* Gives the theme button a consistent appearance. */
+            .dws-theme-toggle {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 7px;
+                padding: 10px 13px;
+                border: 1px solid var(--border-color);
+                border-radius: 10px;
+                background: var(--surface-secondary);
+                color: var(--text-primary);
+                font-size: 12px;
+                font-weight: 650;
+                white-space: nowrap;
+                cursor: pointer;
+            }
+
+            /* Keeps the theme button visible on narrow screens. */
+            @@media (max-width: 600px) {
+                .dws-topbar-actions {
+                    flex-wrap: wrap;
+                }
+            }
     </style>
 </head>
 <body>
@@ -841,6 +958,16 @@
                     </div>
 
                     <div class="dws-topbar-actions">
+
+                        <!-- Allows the customer to switch the global application theme. -->
+                        <button type="button"
+                                class="dws-theme-toggle"
+                                data-theme-toggle
+                                aria-label="Switch to dark mode"
+                                aria-pressed="false">
+                            <span data-theme-icon>🌙</span>
+                            <span data-theme-label>Dark Mode</span>
+                        </button>
 
                         <!-- Displays the signed-in customer. -->
                         <div class="dws-account">
@@ -1063,6 +1190,9 @@
             </main>
         </div>
     </div>
+
+    <!-- Loads the shared theme manager used by every application page. -->
+    <script src="~/js/theme.js" asp-append-version="true"></script>
 
 </body>
 </html>

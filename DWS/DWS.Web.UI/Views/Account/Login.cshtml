@@ -8,6 +8,107 @@
 <!-- Loads the custom login page stylesheet. -->
 <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
 
+<!-- Provides additional dark-theme styling for the login page. -->
+<style>
+    /* Positions the theme button inside the login form panel. */
+    .auth-theme-control {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 22px;
+    }
+
+    /* Styles the theme toggle button. */
+    .auth-theme-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 15px;
+        border: 1px solid var(--border-color, #dce2eb);
+        border-radius: 10px;
+        background: var(--surface-secondary, #f3f6fb);
+        color: var(--text-primary, #1e293b);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+        .auth-theme-toggle:hover {
+            background: var(--hover-background, #e9eef7);
+        }
+
+    /* Applies dark-theme colors to the login page. */
+    html[data-theme="dark"] .auth-page {
+        background: var(--page-background, #111827);
+    }
+
+    html[data-theme="dark"] .auth-card {
+        background: var(--surface-background, #1f2937);
+        border-color: var(--border-color, #374151);
+        box-shadow: var(--shadow, 0 15px 40px rgba(0,0,0,.25));
+    }
+
+    html[data-theme="dark"] .auth-form-panel {
+        background: var(--surface-background, #1f2937);
+    }
+
+    html[data-theme="dark"] .auth-title,
+    html[data-theme="dark"] .auth-label {
+        color: var(--text-primary, #f9fafb);
+    }
+
+    html[data-theme="dark"] .auth-subtitle,
+    html[data-theme="dark"] .auth-options,
+    html[data-theme="dark"] .auth-register-link,
+    html[data-theme="dark"] .auth-security-note {
+        color: var(--text-secondary, #cbd5e1);
+    }
+
+    html[data-theme="dark"] .auth-input {
+        background: var(--input-background, #111827);
+        color: var(--text-primary, #f9fafb);
+        border-color: var(--input-border, #4b5563);
+    }
+
+        html[data-theme="dark"] .auth-input::placeholder {
+            color: #9ca3af;
+        }
+
+        html[data-theme="dark"] .auth-input:focus {
+            background: var(--input-background, #111827);
+            color: var(--text-primary, #f9fafb);
+            border-color: var(--brand-color, #3b82f6);
+        }
+
+    html[data-theme="dark"] .auth-theme-toggle {
+        background: var(--surface-secondary, #273449);
+        color: var(--text-primary, #f9fafb);
+        border-color: var(--border-color, #374151);
+    }
+
+        html[data-theme="dark"] .auth-theme-toggle:hover {
+            background: var(--hover-background, #334155);
+        }
+
+    html[data-theme="dark"] .auth-validation-summary {
+        color: #fca5a5;
+    }
+
+    html[data-theme="dark"] .auth-field-error {
+        color: #fca5a5;
+    }
+
+    html[data-theme="dark"] .auth-options .form-check-input {
+        background-color: #374151;
+        border-color: #6b7280;
+    }
+
+        html[data-theme="dark"] .auth-options .form-check-input:checked {
+            background-color: var(--brand-color, #3b82f6);
+            border-color: var(--brand-color, #3b82f6);
+        }
+</style>
+
 <!-- Main login page background and layout. -->
 <div class="auth-page">
     <div class="auth-card">
@@ -64,6 +165,18 @@
         <section class="auth-form-panel">
 
             <div class="auth-form-content">
+
+                <!-- Global light and dark theme toggle. -->
+                <div class="auth-theme-control">
+                    <button type="button"
+                            class="auth-theme-toggle"
+                            data-theme-toggle
+                            aria-label="Switch to dark mode"
+                            aria-pressed="false">
+                        <span data-theme-icon>🌙</span>
+                        <span data-theme-label>Dark Mode</span>
+                    </button>
+                </div>
 
                 <!-- Login heading. -->
                 <span class="auth-form-badge">CUSTOMER PORTAL</span>
@@ -126,6 +239,14 @@
 
                     <!-- Remember-me option. -->
                     <div class="auth-options">
+                        <!-- Provides access to the password recovery page. -->
+                        <div class="text-end mb-3">
+                            <a asp-controller="Account"
+                               asp-action="ForgotPassword"
+                               class="text-decoration-none fw-semibold">
+                                Forgot Password?
+                            </a>
+                        </div>
                         <div class="form-check">
                             <input asp-for="RememberMe"
                                    class="form-check-input" />

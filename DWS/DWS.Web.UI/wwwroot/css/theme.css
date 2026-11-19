@@ -1,0 +1,556 @@
+﻿
+/*
+    DWS Global Theme System
+    Provides consistent Light and Dark themes across the entire application.
+    Supports Authentication, Customer, Admin and Service Staff pages.
+*/
+
+/* =========================================================
+   1. LIGHT THEME - DEFAULT COLOR PALETTE
+   ========================================================= */
+
+:root {
+    color-scheme: light;
+    /* Main backgrounds */
+    --page-bg: #f3f6fc;
+    --surface-bg: #ffffff;
+    --surface-secondary: #f8faff;
+    --surface-hover: #eef3fb;
+    /* Text colors */
+    --text-primary: #172b4d;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    /* Borders and shadows */
+    --border-color: #e5eaf2;
+    --card-shadow: 0 5px 20px rgba(25, 48, 86, 0.05);
+    /* Brand colors */
+    --primary-color: #3478ed;
+    --primary-dark: #204b91;
+    /* Status colors */
+    --success-color: #16a078;
+    --warning-color: #d88a25;
+    --danger-color: #dc4545;
+    /* Additional component colors */
+    --input-bg: #ffffff;
+    --input-border: #dce4ef;
+    --table-header-bg: #f5f8fd;
+    --overlay-bg: rgba(15, 23, 42, 0.45);
+}
+
+/* =========================================================
+   2. DARK THEME - GLOBAL COLOR PALETTE
+   ========================================================= */
+
+[data-theme="dark"] {
+    color-scheme: dark;
+    /* Main backgrounds */
+    --page-bg: #111827;
+    --surface-bg: #1f2937;
+    --surface-secondary: #273449;
+    --surface-hover: #334155;
+    /* Text colors */
+    --text-primary: #f1f5f9;
+    --text-secondary: #c0cad8;
+    --text-muted: #94a3b8;
+    /* Borders and shadows */
+    --border-color: #374151;
+    --card-shadow: 0 5px 20px rgba(0, 0, 0, 0.18);
+    /* Brand colors */
+    --primary-color: #60a5fa;
+    --primary-dark: #2563eb;
+    /* Status colors */
+    --success-color: #34d399;
+    --warning-color: #fbbf24;
+    --danger-color: #f87171;
+    /* Additional component colors */
+    --input-bg: #273449;
+    --input-border: #475569;
+    --table-header-bg: #273449;
+    --overlay-bg: rgba(0, 0, 0, 0.65);
+}
+
+/* =========================================================
+   3. GLOBAL PAGE STYLES
+   ========================================================= */
+
+/* Applies the selected theme to the entire document. */
+html {
+    min-height: 100%;
+    background-color: var(--page-bg);
+}
+
+body {
+    min-height: 100vh;
+    background-color: var(--page-bg) !important;
+    color: var(--text-primary);
+    transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Keeps the main page containers consistent. */
+main,
+.container,
+.container-fluid {
+    color: inherit;
+}
+
+/* =========================================================
+   4. GLOBAL CARDS AND CONTENT SURFACES
+   ========================================================= */
+
+/* Applies shared colors to common application panels. */
+.dws-sidebar,
+.dws-topbar,
+.dws-stat-card,
+.dws-products-panel,
+.dws-card,
+.dws-panel,
+.dws-sidebar-help,
+.card,
+.modal-content,
+.dropdown-menu,
+.list-group-item,
+.accordion-item,
+.popover,
+.toast {
+    background-color: var(--surface-bg);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+    box-shadow: var(--card-shadow);
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+/* Updates common secondary content areas. */
+.dws-empty-state,
+.dws-table-container,
+.dws-form-container,
+.dws-profile-card {
+    background-color: var(--surface-secondary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+/* =========================================================
+   5. GLOBAL TEXT AND HEADINGS
+   ========================================================= */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+label,
+strong,
+.card-title {
+    color: var(--text-primary);
+}
+
+/* Secondary text elements. */
+.text-muted,
+.dws-topbar-description,
+.dws-account-info small,
+.dws-section-header p,
+.form-text {
+    color: var(--text-secondary) !important;
+}
+
+/* Placeholder text in inputs. */
+::placeholder {
+    color: var(--text-muted) !important;
+    opacity: 1;
+}
+
+/* =========================================================
+   6. SIDEBAR AND NAVIGATION
+   ========================================================= */
+
+/* Sidebar background and border. */
+.dws-sidebar {
+    background-color: var(--surface-bg);
+    border-color: var(--border-color);
+}
+
+/* Brand text and navigation labels. */
+.dws-brand,
+.dws-brand-name,
+.dws-menu-label {
+    color: var(--text-primary);
+}
+
+/* Navigation links. */
+.dws-nav-item {
+    color: var(--text-secondary);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+    /* Navigation hover state. */
+    .dws-nav-item:hover {
+        background-color: var(--surface-hover);
+        color: var(--primary-color);
+    }
+
+    /* Active navigation retains its brand gradient. */
+    .dws-nav-item.active {
+        color: #ffffff;
+    }
+
+/* Sidebar assistance panel. */
+.dws-sidebar-help {
+    background-color: var(--surface-secondary);
+    border-color: var(--border-color);
+}
+
+/* =========================================================
+   7. TOPBAR AND ACCOUNT INFORMATION
+   ========================================================= */
+
+.dws-topbar {
+    background-color: var(--surface-bg);
+    border-color: var(--border-color);
+}
+
+.dws-account-info strong {
+    color: var(--text-primary);
+}
+
+.dws-account-info small {
+    color: var(--text-secondary);
+}
+
+/* Customer avatar remains visually distinct. */
+.dws-avatar {
+    background-color: var(--surface-hover);
+    color: var(--primary-color);
+}
+
+/* =========================================================
+   8. FORMS AND INPUT CONTROLS
+   ========================================================= */
+
+input,
+select,
+textarea,
+.form-control,
+.form-select {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    border-color: var(--input-border);
+}
+
+/* Keeps input text readable in dark mode. */
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea,
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    border-color: var(--input-border);
+}
+
+/* Input focus appearance. */
+input:focus,
+select:focus,
+textarea:focus,
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(52, 120, 237, 0.15);
+}
+
+/* Disabled form controls. */
+input:disabled,
+select:disabled,
+textarea:disabled,
+.form-control:disabled {
+    background-color: var(--surface-hover);
+    color: var(--text-muted);
+}
+
+/* =========================================================
+   9. TABLES
+   ========================================================= */
+
+table,
+.table {
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+    /* Table header background. */
+    .table thead th,
+    .table thead td {
+        background-color: var(--table-header-bg);
+        color: var(--text-primary);
+        border-color: var(--border-color);
+    }
+
+    /* Table body cells. */
+    .table tbody td,
+    .table tbody th {
+        color: var(--text-primary);
+        border-color: var(--border-color);
+    }
+
+/* Table row hover. */
+.table-hover tbody tr:hover {
+    background-color: var(--surface-hover);
+    color: var(--text-primary);
+}
+
+/* Bootstrap striped tables. */
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: var(--surface-secondary);
+    color: var(--text-primary);
+}
+
+/* =========================================================
+   10. BUTTONS
+   ========================================================= */
+
+/* Primary buttons retain white text. */
+.btn-primary,
+.dws-primary-btn {
+    color: #ffffff;
+}
+
+/* Secondary buttons. */
+.btn-secondary,
+.btn-outline-secondary,
+.dws-logout {
+    border-color: var(--border-color);
+}
+
+/* Outline buttons adapt to the active theme. */
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+    /* Outline button hover. */
+    .btn-outline-primary:hover {
+        background-color: var(--primary-color);
+        color: #ffffff;
+    }
+
+/* =========================================================
+   11. ALERTS AND STATUS LABELS
+   ========================================================= */
+
+.alert {
+    border-color: var(--border-color);
+}
+
+/* Success alert. */
+.alert-success {
+    background-color: rgba(22, 160, 120, 0.12);
+    color: var(--success-color);
+}
+
+/* Warning alert. */
+.alert-warning {
+    background-color: rgba(216, 138, 37, 0.12);
+    color: var(--warning-color);
+}
+
+/* Danger alert. */
+.alert-danger {
+    background-color: rgba(220, 69, 69, 0.12);
+    color: var(--danger-color);
+}
+
+/* Information alert. */
+.alert-info {
+    background-color: rgba(52, 120, 237, 0.12);
+    color: var(--primary-color);
+}
+
+/* =========================================================
+   12. MODALS AND DROPDOWNS
+   ========================================================= */
+
+.modal-content {
+    background-color: var(--surface-bg);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+.modal-header,
+.modal-footer {
+    border-color: var(--border-color);
+}
+
+.dropdown-menu {
+    background-color: var(--surface-bg);
+    border-color: var(--border-color);
+}
+
+.dropdown-item {
+    color: var(--text-primary);
+}
+
+    .dropdown-item:hover,
+    .dropdown-item:focus {
+        background-color: var(--surface-hover);
+        color: var(--primary-color);
+    }
+
+/* =========================================================
+   13. LINKS
+   ========================================================= */
+
+a {
+    color: var(--primary-color);
+}
+
+/* Prevents primary action links from losing white text. */
+.dws-primary-btn,
+.dws-nav-item.active {
+    color: #ffffff;
+}
+
+/* =========================================================
+   14. THEME TOGGLE BUTTON
+   ========================================================= */
+
+.dws-theme-toggle,
+[data-theme-toggle] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border: 1px solid var(--border-color);
+    background-color: var(--surface-secondary);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+    /* Theme toggle hover state. */
+    .dws-theme-toggle:hover,
+    [data-theme-toggle]:hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+
+/* =========================================================
+   15. BOOTSTRAP COMPONENTS
+   ========================================================= */
+
+/* Bootstrap navigation bar. */
+.navbar,
+.navbar-light {
+    background-color: var(--surface-bg);
+    border-color: var(--border-color);
+}
+
+    .navbar-brand,
+    .navbar .nav-link {
+        color: var(--text-primary);
+    }
+
+/* Pagination. */
+.page-link {
+    background-color: var(--surface-bg);
+    color: var(--primary-color);
+    border-color: var(--border-color);
+}
+
+.page-item.active .page-link {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #ffffff;
+}
+
+/* Accordion components. */
+.accordion-button {
+    background-color: var(--surface-bg);
+    color: var(--text-primary);
+}
+
+.accordion-body {
+    background-color: var(--surface-bg);
+    color: var(--text-primary);
+}
+
+/* =========================================================
+   16. FOOTER
+   ========================================================= */
+
+footer,
+.dws-footer,
+.dws-global-footer {
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+}
+
+/* =========================================================
+   17. DARK THEME SPECIFIC OVERRIDES
+   ========================================================= */
+
+/* Keeps Bootstrap controls readable in dark mode. */
+[data-theme="dark"] .navbar,
+[data-theme="dark"] .card,
+[data-theme="dark"] .modal-content,
+[data-theme="dark"] .dropdown-menu,
+[data-theme="dark"] .list-group-item,
+[data-theme="dark"] .accordion-item {
+    background-color: var(--surface-bg);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+    /* Dark theme navigation text. */
+    [data-theme="dark"] .navbar-brand,
+    [data-theme="dark"] .navbar .nav-link,
+    [data-theme="dark"] .dropdown-item {
+        color: var(--text-primary);
+    }
+
+/* Dark theme table backgrounds. */
+[data-theme="dark"] .table {
+    --bs-table-bg: var(--surface-bg);
+    --bs-table-color: var(--text-primary);
+    --bs-table-border-color: var(--border-color);
+    --bs-table-striped-bg: var(--surface-secondary);
+    --bs-table-hover-bg: var(--surface-hover);
+}
+
+/* Dark theme form controls. */
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    border-color: var(--input-border);
+}
+
+/* Dark theme checkbox and radio labels. */
+[data-theme="dark"] .form-check-label {
+    color: var(--text-primary);
+}
+
+/* =========================================================
+   18. GLOBAL TRANSITIONS
+   ========================================================= */
+
+body,
+.dws-sidebar,
+.dws-topbar,
+.dws-stat-card,
+.dws-products-panel,
+.dws-card,
+.dws-panel,
+.card,
+.modal-content,
+.dropdown-menu,
+.table,
+input,
+select,
+textarea,
+.form-control,
+.form-select,
+button {
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}

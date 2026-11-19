@@ -1,0 +1,926 @@
+﻿@{
+    // Sets the page title displayed in the browser tab.
+    ViewData["Title"] = "My Products";
+
+    // Disables the default application layout.
+    // This page uses its own sidebar, header, and footer.
+    Layout = null;
+
+    // Retrieves the logged-in customer's email address.
+    // Displays "Customer" if the email is unavailable.
+    var customerEmail = User.Identity?.Name ?? "Customer";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Defines the character encoding for the webpage. -->
+    <meta charset="utf-8" />
+
+    <!-- Makes the page responsive on mobile and tablet devices. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Sets the browser tab title. -->
+    <title>@ViewData["Title"] - Digital Warranty Portal</title>
+
+    <style>
+            /* Applies consistent box sizing to all HTML elements. */
+            * {
+                box-sizing: border-box;
+            }
+
+            /* Removes default browser spacing and sets page height. */
+            html, body {
+                margin: 0;
+                min-height: 100%;
+            }
+
+            /* Defines the global background, text color, and font. */
+            body {
+                background: #f3f6fc;
+                color: #172b4d;
+                font-family: "Segoe UI", Arial, sans-serif;
+            }
+
+            /* Main dashboard container occupying the full viewport height. */
+            .dws-dashboard {
+                min-height: 100vh;
+                padding: 30px clamp(16px, 3vw, 42px);
+            }
+
+            /* Creates a two-column layout for sidebar and main content. */
+            .dws-shell {
+                max-width: 1550px;
+                margin: 0 auto;
+                display: grid;
+                grid-template-columns: 250px minmax(0, 1fr);
+                gap: 25px;
+                align-items: start;
+            }
+
+            /* Sidebar container with a white background and subtle shadow. */
+            .dws-sidebar {
+                background: #ffffff;
+                border: 1px solid #e8edf5;
+                border-radius: 20px;
+                padding: 25px 17px;
+                box-shadow: 0 8px 30px rgba(25, 48, 86, 0.05);
+                /* Keeps the sidebar visible while scrolling on desktop. */
+                position: sticky;
+                top: 20px;
+            }
+
+            /* Styles the application logo and brand name. */
+            .dws-brand {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 0 8px 28px;
+                text-decoration: none;
+                color: #172b4d;
+            }
+
+            /* Creates the blue DWS logo background. */
+            .dws-brand-logo {
+                width: 45px;
+                height: 45px;
+                border-radius: 13px;
+                background: linear-gradient(135deg, #173467, #3478ec);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #ffffff;
+                font-weight: 800;
+            }
+
+            /* Styles the application brand name. */
+            .dws-brand-name {
+                font-size: 17px;
+                font-weight: 750;
+            }
+
+            /* Styles the small text displayed below the brand name. */
+            .dws-brand-subtitle {
+                display: block;
+                color: #8996aa;
+                font-size: 10px;
+                margin-top: 4px;
+            }
+
+            /* Styles the sidebar menu heading. */
+            .dws-menu-label {
+                color: #9aa6b8;
+                font-size: 10px;
+                font-weight: 750;
+                letter-spacing: 1.5px;
+                padding: 0 12px;
+                margin-bottom: 12px;
+            }
+
+            /* Arranges sidebar navigation links vertically. */
+            .dws-nav {
+                display: flex;
+                flex-direction: column;
+                gap: 7px;
+            }
+
+            /* Defines the common appearance of navigation links. */
+            .dws-nav-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 13px;
+                border-radius: 11px;
+                color: #63718a;
+                font-size: 13px;
+                font-weight: 600;
+                text-decoration: none;
+                transition: all 0.2s ease;
+            }
+
+                /* Sets the dimensions of navigation icons. */
+                .dws-nav-item svg {
+                    width: 19px;
+                    height: 19px;
+                    flex-shrink: 0;
+                }
+
+                /* Changes navigation appearance when the mouse hovers over it. */
+                .dws-nav-item:hover {
+                    background: #f0f5ff;
+                    color: #2563cf;
+                }
+
+                /* Highlights the currently selected navigation page. */
+                .dws-nav-item.active {
+                    background: linear-gradient(110deg, #204b91, #3478ed);
+                    color: #ffffff;
+                    box-shadow: 0 5px 14px rgba(43, 101, 205, 0.22);
+                }
+
+            /* Creates the sidebar help information panel. */
+            .dws-sidebar-help {
+                margin-top: 35px;
+                padding: 16px;
+                background: #f3f6fc;
+                border-radius: 14px;
+            }
+
+                /* Styles the help panel heading. */
+                .dws-sidebar-help strong {
+                    display: block;
+                    font-size: 12px;
+                    margin-bottom: 6px;
+                }
+
+                /* Styles the help panel description. */
+                .dws-sidebar-help p {
+                    font-size: 11px;
+                    line-height: 1.6;
+                    color: #8491a6;
+                    margin: 0;
+                }
+
+            /* Main content area beside the sidebar. */
+            .dws-main {
+                min-width: 0;
+            }
+
+            /* Creates the top navigation and customer information panel. */
+            .dws-topbar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 20px;
+                background: #ffffff;
+                padding: 19px 24px;
+                border: 1px solid #e8edf5;
+                border-radius: 18px;
+                margin-bottom: 23px;
+                box-shadow: 0 5px 20px rgba(25, 48, 86, 0.035);
+            }
+
+            /* Styles the small section label above the page title. */
+            .dws-eyebrow {
+                color: #3478ed;
+                font-size: 10px;
+                font-weight: 800;
+                letter-spacing: 1.6px;
+                margin-bottom: 5px;
+            }
+
+            /* Styles the main page heading. */
+            .dws-topbar h1 {
+                font-size: clamp(21px, 2vw, 27px);
+                font-weight: 800;
+                margin: 0;
+            }
+
+            /* Styles the description below the page heading. */
+            .dws-topbar-description {
+                font-size: 12px;
+                color: #8290a6;
+                margin: 5px 0 0;
+            }
+
+            /* Arranges the customer profile and logout button horizontally. */
+            .dws-topbar-actions {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+
+            /* Creates the customer account information layout. */
+            .dws-account {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            /* Creates a circular customer avatar. */
+            .dws-avatar {
+                width: 42px;
+                height: 42px;
+                border-radius: 50%;
+                background: #e9f0ff;
+                color: #275db2;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 800;
+            }
+
+            /* Styles the customer account name. */
+            .dws-account-info strong {
+                display: block;
+                font-size: 12px;
+            }
+
+            /* Styles the customer email address. */
+            .dws-account-info small {
+                display: block;
+                max-width: 180px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                color: #8a96a9;
+                font-size: 10px;
+            }
+
+            /* Defines the logout button appearance. */
+            .dws-logout {
+                padding: 10px 13px;
+                border: 1px solid #e5eaf2;
+                background: #ffffff;
+                color: #53647e;
+                border-radius: 10px;
+                font-size: 12px;
+                font-weight: 650;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+                /* Highlights the logout button on mouse hover. */
+                .dws-logout:hover {
+                    color: #d14343;
+                    background: #fff7f7;
+                }
+
+            /* Creates the blue product introduction banner. */
+            .dws-page-banner {
+                background: linear-gradient(115deg, #142f5c, #3477d8);
+                color: #ffffff;
+                padding: 30px 35px;
+                border-radius: 20px;
+                margin-bottom: 24px;
+                box-shadow: 0 12px 30px rgba(30, 73, 139, 0.15);
+            }
+
+                /* Styles the small label inside the introduction banner. */
+                .dws-page-banner span {
+                    font-size: 10px;
+                    font-weight: 800;
+                    letter-spacing: 1.5px;
+                    color: #d9e6fa;
+                }
+
+                /* Styles the introduction banner heading. */
+                .dws-page-banner h2 {
+                    font-size: 27px;
+                    margin: 10px 0;
+                }
+
+                /* Styles the introduction banner description. */
+                .dws-page-banner p {
+                    font-size: 13px;
+                    color: #d9e6fa;
+                    margin: 0;
+                    line-height: 1.7;
+                }
+
+            /* Creates three product statistics columns. */
+            .dws-stats-grid {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 17px;
+                margin-bottom: 25px;
+            }
+
+            /* Styles each product statistics card. */
+            .dws-stat-card {
+                background: #ffffff;
+                border: 1px solid #e8edf5;
+                border-radius: 16px;
+                padding: 20px;
+                box-shadow: 0 5px 18px rgba(25, 48, 86, 0.035);
+            }
+
+                /* Styles the statistics number or placeholder. */
+                .dws-stat-card h3 {
+                    font-size: 25px;
+                    margin: 12px 0 4px;
+                }
+
+                /* Styles the statistics card description. */
+                .dws-stat-card p {
+                    font-size: 11px;
+                    color: #6f7e94;
+                    margin: 0;
+                    font-weight: 650;
+                }
+
+            /* Creates the colored background behind statistics icons. */
+            .dws-stat-icon {
+                width: 42px;
+                height: 42px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+                /* Sets the dimensions of SVG statistics icons. */
+                .dws-stat-icon svg {
+                    width: 21px;
+                    height: 21px;
+                }
+
+            /* Defines reusable colors for statistics icons. */
+            .blue {
+                color: #3478ed;
+                background: #edf3ff;
+            }
+
+            .green {
+                color: #169b73;
+                background: #e8f8f2;
+            }
+
+            .orange {
+                color: #d88a25;
+                background: #fff5e7;
+            }
+
+            /* Creates the white registered products section. */
+            .dws-products-panel {
+                background: #ffffff;
+                border: 1px solid #e8edf5;
+                border-radius: 17px;
+                padding: 23px;
+                box-shadow: 0 5px 18px rgba(25, 48, 86, 0.035);
+            }
+
+            /* Aligns the section heading and registration button. */
+            .dws-section-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+
+                /* Styles the registered products heading. */
+                .dws-section-header h2 {
+                    font-size: 18px;
+                    margin: 0 0 5px;
+                }
+
+                /* Styles the registered products description. */
+                .dws-section-header p {
+                    font-size: 11px;
+                    color: #8794a8;
+                    margin: 0;
+                }
+
+            /* Defines the reusable primary button style. */
+            .dws-primary-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                padding: 11px 16px;
+                border: 0;
+                border-radius: 10px;
+                background: linear-gradient(110deg, #204b91, #3478ed);
+                color: #ffffff;
+                font-size: 12px;
+                font-weight: 700;
+                text-decoration: none;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+                /* Adds a hover effect to primary buttons. */
+                .dws-primary-btn:hover {
+                    color: #ffffff;
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 15px rgba(43, 101, 205, 0.22);
+                }
+
+            /* Creates a centered message when no products are available. */
+            .dws-empty-state {
+                text-align: center;
+                padding: 45px 15px;
+                border: 1px dashed #dce4ef;
+                border-radius: 13px;
+                background: #fbfcff;
+            }
+
+            /* Creates the icon container for the empty state. */
+            .dws-empty-icon {
+                width: 58px;
+                height: 58px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 15px;
+                background: #edf3ff;
+                color: #3478ed;
+                border-radius: 17px;
+            }
+
+                /* Defines the size of the empty state SVG icon. */
+                .dws-empty-icon svg {
+                    width: 28px;
+                    height: 28px;
+                }
+
+            /* Styles the empty state heading. */
+            .dws-empty-state h3 {
+                font-size: 15px;
+                margin: 0 0 8px;
+            }
+
+            /* Styles the empty state explanation. */
+            .dws-empty-state p {
+                max-width: 420px;
+                margin: 0 auto 18px;
+                color: #8996aa;
+                font-size: 12px;
+                line-height: 1.7;
+            }
+
+            /* Styles the footer at the bottom of the page. */
+            .dws-footer {
+                display: flex;
+                justify-content: space-between;
+                gap: 12px;
+                padding: 20px 2px 10px;
+                color: #99a4b5;
+                font-size: 10px;
+            }
+
+            /* Changes the statistics grid layout on tablet screens. */
+            @@media (max-width: 1000px) {
+                .dws-stats-grid {
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                }
+            }
+
+            /* Changes the sidebar layout on smaller screens. */
+            @@media (max-width: 850px) {
+                .dws-shell {
+                    grid-template-columns: 1fr;
+                }
+
+                .dws-sidebar {
+                    position: static;
+                }
+
+                .dws-nav {
+                    flex-direction: row;
+                    overflow-x: auto;
+                }
+                /* Hides secondary sidebar information to save screen space. */
+                .dws-menu-label,
+                .dws-sidebar-help {
+                    display: none;
+                }
+            }
+
+            /* Adjusts the complete page layout for mobile devices. */
+            @@media (max-width: 600px) {
+                .dws-dashboard {
+                    padding: 15px 10px;
+                }
+
+                .dws-topbar {
+                    align-items: flex-start;
+                    flex-direction: column;
+                    padding: 18px;
+                }
+
+                .dws-topbar-actions {
+                    width: 100%;
+                    justify-content: space-between;
+                }
+
+                .dws-stats-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .dws-section-header {
+                    align-items: flex-start;
+                    flex-direction: column;
+                }
+
+                .dws-page-banner {
+                    padding: 25px 22px;
+                }
+
+                .dws-footer {
+                    flex-direction: column;
+                }
+            }
+
+            /* Adds dark-theme support to page-specific elements using global theme variables. */
+            [data-theme="dark"] .dws-nav-item:not(.active) {
+                color: var(--text-secondary);
+            }
+
+                [data-theme="dark"] .dws-nav-item:not(.active):hover {
+                    background: var(--surface-secondary);
+                    color: var(--primary-color);
+                }
+
+            [data-theme="dark"] .dws-brand {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .dws-menu-label,
+            [data-theme="dark"] .dws-brand-subtitle,
+            [data-theme="dark"] .dws-sidebar-help p,
+            [data-theme="dark"] .dws-stat-card p,
+            [data-theme="dark"] .dws-empty-state p,
+            [data-theme="dark"] .dws-footer {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .dws-logout {
+                background: var(--surface-secondary);
+                border-color: var(--border-color);
+                color: var(--text-primary);
+            }
+
+                [data-theme="dark"] .dws-logout:hover {
+                    background: #3b2630;
+                    color: #fca5a5;
+                }
+
+            /* Keeps the theme toggle readable in both color schemes. */
+            .dws-theme-toggle {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 7px;
+                padding: 10px 13px;
+                border: 1px solid var(--border-color);
+                border-radius: 10px;
+                background: var(--surface-secondary);
+                color: var(--text-primary);
+                font-size: 12px;
+                font-weight: 650;
+                cursor: pointer;
+                transition: all .2s ease;
+            }
+
+                .dws-theme-toggle:hover {
+                    border-color: var(--primary-color);
+                    color: var(--primary-color);
+                }
+
+    </style>
+
+    <!-- Loads the shared Light and Dark theme colors used across the application. -->
+    <link rel="stylesheet" href="~/css/theme.css" asp-append-version="true" />
+</head>
+
+<body>
+
+    <!-- Main customer dashboard container. -->
+    <div class="dws-dashboard">
+        <div class="dws-shell">
+
+            <!-- Sidebar contains application branding and navigation links. -->
+            <aside class="dws-sidebar">
+
+                <!-- Clicking the brand logo returns the customer to the dashboard. -->
+                <a asp-controller="Customer"
+                   asp-action="Index"
+                   class="dws-brand">
+
+                    <div class="dws-brand-logo">DWS</div>
+
+                    <div>
+                        <div class="dws-brand-name">Warranty Portal</div>
+                        <span class="dws-brand-subtitle">
+                            DIGITAL WARRANTY & SERVICE
+                        </span>
+                    </div>
+                </a>
+
+                <!-- Identifies the sidebar navigation section. -->
+                <div class="dws-menu-label">CUSTOMER MENU</div>
+
+                <!-- Contains navigation links for customer modules. -->
+                <nav class="dws-nav">
+
+                    <!-- Navigates to the customer dashboard. -->
+                    <a asp-controller="Customer"
+                       asp-action="Index"
+                       class="dws-nav-item">
+
+                        <svg viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="1.8"
+                             stroke-linecap="round" stroke-linejoin="round">
+
+                            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+                            <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                        </svg>
+
+                        Dashboard
+                    </a>
+
+                    <!-- Highlights My Products because this is the current page. -->
+                    <a asp-controller="Customer"
+                       asp-action="MyProducts"
+                       class="dws-nav-item active">
+
+                        <svg viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="1.8"
+                             stroke-linecap="round" stroke-linejoin="round">
+
+                            <rect x="4" y="3" width="16" height="18" rx="2"></rect>
+                            <path d="M8 7h8M8 11h8M8 15h4"></path>
+                        </svg>
+
+                        My Products
+                    </a>
+
+                    <!-- Placeholder navigation link for the future warranty module. -->
+                    <a href="#" class="dws-nav-item">
+                        My Warranties
+                    </a>
+
+                    <!-- Placeholder navigation link for the future service module. -->
+                    <a href="#" class="dws-nav-item">
+                        Service Requests
+                    </a>
+
+                    <!-- Placeholder navigation link for the future notification module. -->
+                    <a href="#" class="dws-nav-item">
+                        Notifications
+                    </a>
+
+                </nav>
+
+                <!-- Provides basic help information to customers. -->
+                <div class="dws-sidebar-help">
+                    <strong>Need assistance?</strong>
+
+                    <p>
+                        Your digital warranty portal keeps your product
+                        and service information in one place.
+                    </p>
+                </div>
+
+            </aside>
+
+            <!-- Main content area displays the My Products page. -->
+            <main class="dws-main">
+
+                <!-- Topbar displays the page title and customer account information. -->
+                <header class="dws-topbar">
+
+                    <div>
+                        <div class="dws-eyebrow">CUSTOMER WORKSPACE</div>
+
+                        <h1>My Products</h1>
+
+                        <p class="dws-topbar-description">
+                            View and manage your registered products.
+                        </p>
+                    </div>
+
+                    <!-- Contains the customer profile and logout button. -->
+                    <div class="dws-topbar-actions">
+                        <!-- Allows customers to switch between light and dark themes. -->
+                        <button type="button"
+                                class="dws-theme-toggle"
+                                data-theme-toggle
+                                aria-label="Switch to dark mode">
+
+                            <!-- These elements are updated by the global theme manager. -->
+                            <span data-theme-icon>🌙</span>
+                            <span data-theme-label>Dark Mode</span>
+
+                        </button>
+
+                        <!-- Displays information about the logged-in customer. -->
+                        <div class="dws-account">
+
+                            <!-- Displays a simple customer avatar. -->
+                            <div class="dws-avatar">C</div>
+
+                            <div class="dws-account-info">
+                                <strong>Customer Account</strong>
+
+                                <!-- Displays the email retrieved from ASP.NET Identity. -->
+                                <small title="@customerEmail">
+                                    @customerEmail
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Sends a POST request to the existing Logout action. -->
+                        <form asp-controller="Account"
+                              asp-action="Logout"
+                              method="post">
+
+                            <!-- Submits the logout request. -->
+                            <button type="submit" class="dws-logout">
+                                Logout
+                            </button>
+                        </form>
+
+                    </div>
+                </header>
+
+                <!-- Introduces the purpose of the My Products module. -->
+                <section class="dws-page-banner">
+
+                    <span>PRODUCT MANAGEMENT</span>
+
+                    <h2>Your registered products</h2>
+
+                    <p>
+                        Keep track of your products, registration information
+                        and warranty protection from one place.
+                    </p>
+
+                </section>
+
+                <!-- Displays summary information about customer products. -->
+                <!-- Placeholder values will be replaced with database values later. -->
+                <section class="dws-stats-grid">
+
+                    <!-- Displays the total number of registered products. -->
+                    <article class="dws-stat-card">
+
+                        <div class="dws-stat-icon blue">
+
+                            <svg viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.8"
+                                 stroke-linecap="round" stroke-linejoin="round">
+
+                                <rect x="4" y="3" width="16" height="18" rx="2"></rect>
+                                <path d="M8 7h8M8 11h8M8 15h4"></path>
+                            </svg>
+
+                        </div>
+
+                        <h3>—</h3>
+                        <p>Total Registered Products</p>
+
+                    </article>
+
+                    <!-- Displays the number of products with active warranties. -->
+                    <article class="dws-stat-card">
+
+                        <div class="dws-stat-icon green">
+
+                            <svg viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.8"
+                                 stroke-linecap="round" stroke-linejoin="round">
+
+                                <path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z"></path>
+                                <path d="m9 12 2 2 4-4"></path>
+                            </svg>
+
+                        </div>
+
+                        <h3>—</h3>
+                        <p>Warranty Protected</p>
+
+                    </article>
+
+                    <!-- Displays the number of registrations waiting for admin approval. -->
+                    <article class="dws-stat-card">
+
+                        <div class="dws-stat-icon orange">
+
+                            <svg viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.8"
+                                 stroke-linecap="round" stroke-linejoin="round">
+
+                                <circle cx="12" cy="12" r="9"></circle>
+                                <path d="M12 7v5l3 2"></path>
+                            </svg>
+
+                        </div>
+
+                        <h3>—</h3>
+                        <p>Pending Approvals</p>
+
+                    </article>
+
+                </section>
+
+                <!-- Main panel containing the customer's registered products. -->
+                <section class="dws-products-panel">
+
+                    <!-- Section heading and product registration action. -->
+                    <div class="dws-section-header">
+
+                        <div>
+                            <h2>Registered Products</h2>
+
+                            <p>
+                                All products registered under your account.
+                            </p>
+                        </div>
+
+                        <!-- Registration page will be connected in a future step. -->
+                        <a href="#" class="dws-primary-btn">
+                            + Register Product
+                        </a>
+
+                    </div>
+
+                    <!-- Displays a message when the customer has no registered products. -->
+                    <!-- This placeholder will be replaced with real database records later. -->
+                    <div class="dws-empty-state">
+
+                        <!-- Product icon for the empty state. -->
+                        <div class="dws-empty-icon">
+
+                            <svg viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.8"
+                                 stroke-linecap="round" stroke-linejoin="round">
+
+                                <rect x="4" y="3" width="16" height="18" rx="2"></rect>
+                                <path d="M8 7h8M8 11h8M8 15h4"></path>
+                            </svg>
+
+                        </div>
+
+                        <!-- Empty state heading. -->
+                        <h3>No products registered yet</h3>
+
+                        <!-- Explains why the product list is currently empty. -->
+                        <p>
+                            You haven't registered any products yet.
+                            Once you register a product, its details and warranty
+                            information will appear here.
+                        </p>
+
+                        <!-- Placeholder button for the future registration workflow. -->
+                        <a href="#" class="dws-primary-btn">
+                            Register Your First Product
+                        </a>
+
+                    </div>
+
+                </section>
+
+                <!-- Footer displays application copyright information. -->
+                <footer class="dws-footer">
+
+                    <span>
+                        © @DateTime.Now.Year Digital Warranty & Service Portal
+                    </span>
+
+                    <span>Customer Workspace</span>
+
+                </footer>
+
+            </main>
+        </div>
+    </div>
+    <!-- Loads the shared theme manager used by every application page. -->
+    <script src="~/js/theme.js" asp-append-version="true"></script>
+
+</body>
+</html>

@@ -2,6 +2,9 @@
 using DWS.DataAccess.Context;
 using DWS.DataAccess.DependencyInjection;
 using DWS.Entities.Models;
+using DWS.Facade.Interfaces;
+using DWS.Facade.Services;
+using DWS.Framework.Configurations;
 using DWS.Web.UI.Seeders;
 using Microsoft.AspNetCore.Identity;
 
@@ -18,6 +21,15 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 // Registers the database context, repositories, and Unit of Work.
 builder.Services.AddDataAccessServices(connectionString);
+
+// Binds EmailSettings to the configuration section.
+// In Development, Gmail credentials are loaded from User Secrets.
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings"));
+
+// Registers the email service for dependency injection.
+// Scoped lifetime creates one service instance per HTTP request.
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Configures ASP.NET Core Identity with ApplicationUser and integer-based roles.
 builder.Services
@@ -38,7 +50,7 @@ builder.Services
     })
     // Stores Identity users and roles in the application's SQL Server database.
     .AddEntityFrameworkStores<ApplicationDbContext>()
-    // Enables Identity token generation.
+    // Enables Identity token generation for password reset operations.
     .AddDefaultTokenProviders();
 
 // Configures the authentication cookie.
