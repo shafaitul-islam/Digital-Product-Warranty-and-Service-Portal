@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Logging;
 using System.Text;
+using System.Net;
 
 namespace DWS.Web.UI.Controllers;
 
@@ -23,15 +25,20 @@ public class AccountController : Controller
     // Sends password recovery emails through Gmail SMTP.
     private readonly IEmailService _emailService;
 
-    // Constructor: Receives required services through dependency injection.
+    // Records application errors for developer troubleshooting.
+    private readonly ILogger<AccountController> _logger;
+
+    // Receives required services through dependency injection.
     public AccountController(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
-        IEmailService emailService)
+        IEmailService emailService,
+        ILogger<AccountController> logger)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _emailService = emailService;
+        _logger = logger;
     }
 
     // Displays the customer registration form.
@@ -99,7 +106,9 @@ public class AccountController : Controller
         // Displays Identity validation errors on the registration form.
         foreach (var error in result.Errors)
         {
-            ModelState.AddModelError(string.Empty, error.Description);
+            ModelState.AddModelError(
+                string.Empty,
+                error.Description);
         }
 
         return View(model);
@@ -142,7 +151,7 @@ public class AccountController : Controller
 
         if (result.Succeeded)
         {
-            // Redirects to the requested local page after successful login.
+            // Redirects only to a local URL after successful login.
             if (!string.IsNullOrWhiteSpace(returnUrl)
                 && Url.IsLocalUrl(returnUrl))
             {
@@ -188,48 +197,69 @@ public class AccountController : Controller
         // Uses the same response for existing and non-existing accounts.
         if (user != null && user.IsActive)
         {
-            // Generates a secure password reset token using Identity.
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-
-            // Encodes the token so it can safely travel inside a URL.
-            var encodedToken = WebEncoders.Base64UrlEncode(
-                Encoding.UTF8.GetBytes(token));
-
-            // Generates the password reset link.
-            var resetLink = Url.Action(
-                nameof(ResetPassword),
-                "Account",
-                new
-                {
-                    email = user.Email,
-                    token = encodedToken
-                },
-                protocol: Request.Scheme);
-
-            if (resetLink != null)
+            try
             {
-                // Builds the HTML content of the recovery email.
-                var emailBody = $@"
-                    <div style='font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:25px;'>
-                        <h2 style='color:#2456b5;'>Password Reset Request</h2>
-                        <p>Hello {System.Net.WebUtility.HtmlEncode(user.FullName)},</p>
-                        <p>We received a request to reset your DWS account password.</p>
-                        <p>Click the button below to create a new password.</p>
-                        <p style='margin:30px 0;'>
-                            <a href='{resetLink}'
-                               style='background:#2456b5;color:white;padding:14px 24px;text-decoration:none;border-radius:8px;'>
-                                Reset My Password
-                            </a>
-                        </p>
-                        <p>If you did not request this change, you can safely ignore this email.</p>
-                        <p style='color:#777;font-size:12px;'>Digital Warranty & Service Portal</p>
-                    </div>";
+                // Generates a secure password reset token using Identity.
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-                // Sends the password reset email through Gmail SMTP.
-                await _emailService.SendEmailAsync(
-                    user.Email!,
-                    "Reset Your DWS Account Password",
-                    emailBody);
+                // Encodes the token so it can safely travel inside a URL.
+                var encodedToken = WebEncoders.Base64UrlEncode(
+                    Encoding.UTF8.GetBytes(token));
+
+                // Generates the password reset link.
+                var resetLink = Url.Action(
+                    nameof(ResetPassword),
+                    "Account",
+                    new
+                    {
+                        email = user.Email,
+                        token = encodedToken
+                    },
+                    protocol: Request.Scheme);
+
+                if (!string.IsNullOrWhiteSpace(resetLink))
+                {
+                    // Encodes user-provided content before inserting it into HTML.
+                    var safeName = WebUtility.HtmlEncode(user.FullName);
+                    var safeLink = WebUtility.HtmlEncode(resetLink);
+
+                    // Builds the HTML content of the recovery email.
+                    var emailBody = $@"
+                        <div style='font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:25px;'>
+                            <h2 style='color:#2456b5;'>Password Reset Request</h2>
+                            <p>Hello {safeName},</p>
+                            <p>We received a request to reset your DWS account password.</p>
+                            <p>Click the button below to create a new password.</p>
+                            <p style='margin:30px 0;'>
+                                <a href='{safeLink}'
+                                   style='background:#2456b5;color:white;padding:14px 24px;text-decoration:none;border-radius:8px;'>
+                                    Reset My Password
+                                </a>
+                            </p>
+                            <p>If you did not request this change, you can safely ignore this email.</p>
+                            <p style='color:#777;font-size:12px;'>Digital Warranty & Service Portal</p>
+                        </div>";
+
+                    // Sends the password reset email through Gmail SMTP.
+                    await _emailService.SendEmailAsync(
+                        user.Email!,
+                        "Reset Your DWS Account Password",
+                        emailBody);
+                }
+                else
+                {
+                    // Records an error if the reset URL could not be generated.
+                    _logger.LogError(
+                        "Password reset URL generation failed.");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Records the SMTP or token generation error for troubleshooting.
+                // Does not expose technical details to the customer.
+                _logger.LogError(
+                    ex,
+                    "Password recovery email processing failed.");
             }
         }
 
@@ -237,7 +267,7 @@ public class AccountController : Controller
         return RedirectToAction(nameof(ForgotPasswordConfirmation));
     }
 
-    // Displays a generic confirmation after a recovery request.
+    // Displays the password recovery confirmation page.
     [HttpGet]
     [AllowAnonymous]
     public IActionResult ForgotPasswordConfirmation()
@@ -257,11 +287,11 @@ public class AccountController : Controller
             return View("ResetPasswordInvalid");
         }
 
-        // Decodes the URL-safe token generated earlier.
         string decodedToken;
 
         try
         {
+            // Decodes the URL-safe token generated earlier.
             decodedToken = Encoding.UTF8.GetString(
                 WebEncoders.Base64UrlDecode(token));
         }
@@ -308,6 +338,13 @@ public class AccountController : Controller
             user,
             model.Token,
             model.NewPassword);
+        // Logs Identity password reset validation results.
+        foreach (var error in result.Errors)
+        {
+            _logger.LogWarning(
+                "Password reset failed. Error Code: {ErrorCode}",
+                error.Code);
+        }
 
         if (result.Succeeded)
         {
@@ -315,7 +352,14 @@ public class AccountController : Controller
             return RedirectToAction(nameof(ResetPasswordConfirmation));
         }
 
-        // Displays Identity validation errors.
+        // Checks whether Identity rejected the reset token.
+        if (result.Errors.Any(error => error.Code == "InvalidToken"))
+        {
+            // Displays the invalid or expired reset link page.
+            return View("ResetPasswordInvalid");
+        }
+
+        // Displays password policy and other validation errors.
         foreach (var error in result.Errors)
         {
             ModelState.AddModelError(

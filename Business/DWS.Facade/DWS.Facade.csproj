@@ -7,11 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Interfaces\" />
-    <Folder Include="Services\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\DWS\DWS.DataAccess\DWS.DataAccess.csproj" />
     <ProjectReference Include="..\..\DWS\DWS.Framework\DWS.Framework.csproj" />
     <ProjectReference Include="..\..\Library\DWS.Entities\DWS.Entities.csproj" />
