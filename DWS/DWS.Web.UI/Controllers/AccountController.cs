@@ -100,7 +100,7 @@ public class AccountController : Controller
             // Signs in the customer after successful registration.
             await _signInManager.SignInAsync(user, isPersistent: false);
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Customer");
         }
 
         // Displays Identity validation errors on the registration form.
