@@ -1,0 +1,727 @@
+﻿@model DWS.Web.UI.Models.ViewModels.AdminDashboardViewModel
+
+@{
+    // Uses the admin layout for sidebar and top navbar.
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    // Get the total number of service requests.
+    var totalRequests = Model.TotalRequests;
+
+    // Calculate the percentage of pending requests.
+    var pendingPercentage = totalRequests > 0
+        ? (Model.PendingRequests * 100.0 / totalRequests)
+        : 0;
+
+    // Calculate the percentage of in-progress requests.
+    var inProgressPercentage = totalRequests > 0
+        ? (Model.InProgressRequests * 100.0 / totalRequests)
+        : 0;
+
+    // Calculate the percentage of completed requests.
+    var completedPercentage = totalRequests > 0
+        ? (Model.CompletedRequests * 100.0 / totalRequests)
+        : 0;
+
+    // Get the maximum monthly registration count for chart scaling.
+    var maxRegistrations = Model.MonthlyWarrantyData != null
+        && Model.MonthlyWarrantyData.Any()
+        ? Model.MonthlyWarrantyData.Max(x => x.TotalRegistrations)
+        : 0;
+}
+
+<!-- Main dashboard container -->
+<div class="admin-dashboard">
+
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <div>
+            <h2>Dashboard Overview</h2>
+            <p>Welcome back, Administrator!</p>
+        </div>
+
+        <!-- Export report button -->
+        <button class="export-btn" type="button">
+            <i class="bi bi-download"></i>
+            Export Report
+        </button>
+    </div>
+
+    <!-- ============================= -->
+    <!-- Dashboard Statistics Cards   -->
+    <!-- ============================= -->
+
+    <div class="stats-grid">
+
+        <!-- Total Users Card -->
+        <div class="stat-card">
+            <div class="stat-info">
+                <span class="stat-title">Total Users</span>
+                <h3>@Model.TotalUsers.ToString("N0")</h3>
+                <span class="stat-subtitle">Registered users</span>
+            </div>
+
+            <div class="stat-icon blue">
+                <i class="bi bi-people"></i>
+            </div>
+        </div>
+
+        <!-- Total Products Card -->
+        <div class="stat-card">
+            <div class="stat-info">
+                <span class="stat-title">Total Products</span>
+                <h3>@Model.TotalProducts.ToString("N0")</h3>
+                <span class="stat-subtitle">Available in portal</span>
+            </div>
+
+            <div class="stat-icon green">
+                <i class="bi bi-box"></i>
+            </div>
+        </div>
+
+        <!-- Active Warranties Card -->
+        <div class="stat-card">
+            <div class="stat-info">
+                <span class="stat-title">Active Warranties</span>
+                <h3>@Model.ActiveWarranties.ToString("N0")</h3>
+                <span class="stat-subtitle">Currently active</span>
+            </div>
+
+            <div class="stat-icon orange">
+                <i class="bi bi-shield-check"></i>
+            </div>
+        </div>
+
+        <!-- Pending Service Requests Card -->
+        <div class="stat-card">
+            <div class="stat-info">
+                <span class="stat-title">Pending Requests</span>
+                <h3>@Model.PendingRequests.ToString("N0")</h3>
+                <span class="stat-subtitle negative">Requires attention</span>
+            </div>
+
+            <div class="stat-icon red">
+                <i class="bi bi-tools"></i>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ============================= -->
+    <!-- Charts and Request Overview  -->
+    <!-- ============================= -->
+
+    <div class="dashboard-middle">
+
+        <!-- Warranty Registration Chart -->
+        <div class="dashboard-panel warranty-panel">
+            <div class="panel-header">
+                <h4>Warranty Overview</h4>
+                <p>Warranty registrations throughout the year</p>
+            </div>
+
+            <!-- Dynamic monthly registration chart -->
+            <div class="chart-placeholder">
+
+                @if (Model.MonthlyWarrantyData != null && Model.MonthlyWarrantyData.Any())
+                {
+                    <div class="registration-chart">
+
+                        @foreach (var item in Model.MonthlyWarrantyData)
+                        {
+                            // Calculate the bar height based on the maximum registration count.
+                            var barHeight = maxRegistrations > 0
+                                ? (item.TotalRegistrations * 100.0 / maxRegistrations)
+                                : 0;
+
+                            <div class="chart-column">
+
+                                <!-- Registration Count -->
+                                <span class="chart-count">
+                                    @item.TotalRegistrations
+                                </span>
+
+                                <!-- Chart Bar -->
+                                <div class="chart-bar-container">
+                                    <div class="chart-bar"
+                                         style="height: @(barHeight.ToString("0.##"))%;">
+                                    </div>
+                                </div>
+
+                                <!-- Month Label -->
+                                <span class="chart-month">
+                                    @item.Month
+                                </span>
+
+                            </div>
+                        }
+
+                    </div>
+                }
+                else
+                {
+                    <div class="chart-empty">
+                        <i class="bi bi-bar-chart-line"></i>
+                        <p>No registration data available.</p>
+                    </div>
+                }
+
+            </div>
+        </div>
+
+        <!-- Service Request Status -->
+        <div class="dashboard-panel request-panel">
+            <h4>Service Request Status</h4>
+
+            <!-- Pending Requests -->
+            <div class="status-item">
+                <div class="status-label">
+                    <span>Pending</span>
+                    <span>@Model.PendingRequests</span>
+                </div>
+
+                <div class="progress-track">
+                    <div class="progress-fill pending-fill"
+                         style="width: @(pendingPercentage.ToString("0.##"))%;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- In Progress Requests -->
+            <div class="status-item">
+                <div class="status-label">
+                    <span>In Progress</span>
+                    <span>@Model.InProgressRequests</span>
+                </div>
+
+                <div class="progress-track">
+                    <div class="progress-fill progress-fill-blue"
+                         style="width: @(inProgressPercentage.ToString("0.##"))%;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Completed Requests -->
+            <div class="status-item">
+                <div class="status-label">
+                    <span>Completed</span>
+                    <span>@Model.CompletedRequests</span>
+                </div>
+
+                <div class="progress-track">
+                    <div class="progress-fill completed-fill"
+                         style="width: @(completedPercentage.ToString("0.##"))%;">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ============================= -->
+    <!-- Recent Service Requests Table -->
+    <!-- ============================= -->
+
+    <div class="dashboard-panel recent-requests-panel">
+
+        <!-- Table Header -->
+        <div class="recent-header">
+            <h4>Recent Service Requests</h4>
+
+            <a asp-controller="Admin"
+               asp-action="ServiceRequests"
+               class="view-all-btn">
+                View All
+            </a>
+        </div>
+
+        <!-- Requests Table -->
+        <div class="table-responsive">
+            <table class="dashboard-table">
+
+                <thead>
+                    <tr>
+                        <th>Request ID</th>
+                        <th>Customer</th>
+                        <th>Product</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (Model.RecentServiceRequests != null && Model.RecentServiceRequests.Any())
+                    {
+                        // Loop through the recent service requests from the database.
+                        foreach (var request in Model.RecentServiceRequests)
+                        {
+                            // Convert the status into a CSS class.
+                            var statusClass = request.Status.ToLower().Replace(" ", "-");
+
+                            <tr>
+                                <!-- Display the service request ID -->
+                                <td>#SR-@request.ServiceRequestId</td>
+
+                                <!-- Display the customer's name -->
+                                <td>@request.CustomerName</td>
+
+                                <!-- Display the product name -->
+                                <td>@request.ProductName</td>
+
+                                <!-- Display the request date -->
+                                <td>@request.RequestDate.ToString("dd MMM yyyy")</td>
+
+                                <!-- Display the request status -->
+                                <td>
+                                    <span class="status-badge @statusClass">
+                                        @request.Status
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        // Display a message when no service requests are available.
+                        <tr>
+                            <td colspan="5" class="text-center">
+                                No service requests found.
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- ============================= -->
+<!-- Dashboard Custom CSS          -->
+<!-- ============================= -->
+
+<style>
+
+    /* Main dashboard spacing */
+    .admin-dashboard {
+        padding: 5px;
+        color: #1e293b;
+    }
+
+    /* Dashboard heading area */
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        gap: 15px;
+    }
+
+        .dashboard-header h2 {
+            margin: 0;
+            font-size: 27px;
+            font-weight: 700;
+        }
+
+        .dashboard-header p {
+            margin-top: 5px;
+            margin-bottom: 0;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+    /* Export button */
+    .export-btn {
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 7px;
+        padding: 11px 16px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+        .export-btn:hover {
+            background: #1d4ed8;
+        }
+
+    /* Statistics cards layout */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    /* Individual statistic card */
+    .stat-card {
+        background: #ffffff;
+        border: 1px solid #e5eaf1;
+        border-radius: 10px;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 5px rgba(15, 23, 42, 0.04);
+    }
+
+    /* Statistics card text */
+    .stat-title {
+        color: #64748b;
+        font-size: 13px;
+    }
+
+    .stat-info h3 {
+        margin: 8px 0;
+        font-size: 27px;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .stat-subtitle {
+        font-size: 12px;
+        color: #64748b;
+    }
+
+    .positive {
+        color: #16a34a;
+    }
+
+    .negative {
+        color: #dc2626;
+    }
+
+    /* Statistics icons */
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 9px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 22px;
+    }
+
+        .stat-icon.blue {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .stat-icon.green {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .stat-icon.orange {
+            background: #fff7ed;
+            color: #f59e0b;
+        }
+
+        .stat-icon.red {
+            background: #fff1f2;
+            color: #e11d48;
+        }
+
+    /* Middle dashboard section */
+    .dashboard-middle {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    /* Common panel design */
+    .dashboard-panel {
+        background: #ffffff;
+        border: 1px solid #e5eaf1;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(15, 23, 42, 0.04);
+    }
+
+        .dashboard-panel h4 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+    /* Panel header */
+    .panel-header p {
+        color: #64748b;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+
+    /* Warranty registration chart */
+    .chart-placeholder {
+        min-height: 260px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: stretch;
+        color: #94a3b8;
+    }
+
+    /* Chart layout */
+    .registration-chart {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 8px;
+        height: 220px;
+        width: 100%;
+        padding: 15px 5px 0;
+        box-sizing: border-box;
+    }
+
+    /* Individual month column */
+    .chart-column {
+        flex: 1;
+        min-width: 0;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    /* Registration number above each bar */
+    .chart-count {
+        font-size: 11px;
+        color: #64748b;
+        margin-bottom: 5px;
+        min-height: 14px;
+        white-space: nowrap;
+    }
+
+    /* Bar area */
+    .chart-bar-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        min-height: 0;
+    }
+
+    /* Individual chart bar */
+    .chart-bar {
+        width: 100%;
+        max-width: 35px;
+        background: #4f46e5;
+        border-radius: 5px 5px 0 0;
+        transition: height 0.4s ease;
+    }
+
+    /* Month label below chart */
+    .chart-month {
+        font-size: 10px;
+        margin-top: 8px;
+        color: #64748b;
+        white-space: nowrap;
+        text-align: center;
+    }
+
+    /* Empty chart message */
+    .chart-empty {
+        min-height: 220px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: #94a3b8;
+    }
+
+        .chart-empty i {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        .chart-empty p {
+            font-size: 13px;
+        }
+
+    /* Service status section */
+    .request-panel h4 {
+        margin-bottom: 25px;
+    }
+
+    .status-item {
+        margin-bottom: 22px;
+    }
+
+    .status-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        margin-bottom: 9px;
+    }
+
+    /* Progress bar background */
+    .progress-track {
+        width: 100%;
+        height: 6px;
+        background: #e5e7eb;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    /* Progress bar foreground */
+    .progress-fill {
+        height: 100%;
+        border-radius: 10px;
+    }
+
+    .pending-fill {
+        background: #f59e0b;
+    }
+
+    .progress-fill-blue {
+        background: #2563eb;
+    }
+
+    .completed-fill {
+        background: #16a34a;
+    }
+
+    /* Recent requests section */
+    .recent-requests-panel {
+        margin-bottom: 20px;
+    }
+
+    .recent-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    /* View all button */
+    .view-all-btn {
+        border: 1px solid #2563eb;
+        color: #2563eb;
+        padding: 6px 12px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 12px;
+        transition: 0.2s;
+    }
+
+        .view-all-btn:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+    /* Dashboard table */
+    .dashboard-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
+
+        .dashboard-table thead {
+            background: #f8fafc;
+        }
+
+        .dashboard-table th {
+            text-align: left;
+            padding: 12px;
+            font-weight: 600;
+            color: #334155;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .dashboard-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .dashboard-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+    /* Request status badges */
+    .status-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 5px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.assigned {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .status-badge.in-progress {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .status-badge.completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge.rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-badge.cancelled {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+    /* Responsive design for tablets */
+    @@media (max-width: 1100px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .dashboard-middle {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Responsive design for mobile devices */
+    @@media (max-width: 600px) {
+        .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .dashboard-panel {
+            padding: 15px;
+        }
+
+        .dashboard-table {
+            min-width: 650px;
+        }
+        /* Make the chart scrollable on small screens */
+        .registration-chart {
+            overflow-x: auto;
+            gap: 10px;
+        }
+
+        .chart-column {
+            min-width: 35px;
+        }
+    }
+
+</style>

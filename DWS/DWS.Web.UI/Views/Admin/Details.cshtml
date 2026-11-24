@@ -1,0 +1,769 @@
+﻿@model DWS.Web.UI.Models.ViewModels.ServiceRequestDetailsViewModel
+
+@{
+    // Use the admin layout for the sidebar and navigation.
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    // Generate a CSS class based on the request status.
+    var statusClass = Model.Status.ToLower().Replace(" ", "-");
+
+    // Determine whether warranty dates are available.
+    var hasWarranty = Model.WarrantyStartDate.HasValue
+        && Model.WarrantyEndDate.HasValue;
+}
+
+<div class="request-details-page">
+
+    <!-- Page Header -->
+    <div class="details-page-header">
+        <div class="details-header-left">
+            <a asp-controller="Admin"
+               asp-action="ServiceRequests"
+               class="details-back-link">
+                <i class="bi bi-arrow-left"></i>
+                Back to Service Requests
+            </a>
+
+            <h2>Service Request Details</h2>
+            <p>Review customer information and service request details.</p>
+        </div>
+
+        <div class="details-header-right">
+            <span class="details-status-badge @statusClass">
+                @Model.Status
+            </span>
+            <span class="details-request-number">
+                #SR-@Model.ServiceRequestId
+            </span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="details-layout">
+
+        <!-- Left Column -->
+        <div class="details-main-column">
+
+            <!-- Request Information -->
+            <div class="details-card">
+
+                <div class="details-card-header">
+                    <div class="details-card-icon blue-icon">
+                        <i class="bi bi-clipboard2-check"></i>
+                    </div>
+                    <div>
+                        <h4>Request Information</h4>
+                        <p>Service issue submitted by the customer</p>
+                    </div>
+                </div>
+
+                <div class="details-info-grid">
+
+                    <div class="details-info-item">
+                        <label>Request ID</label>
+                        <span>#SR-@Model.ServiceRequestId</span>
+                    </div>
+
+                    <div class="details-info-item">
+                        <label>Request Date</label>
+                        <span>@Model.RequestDate.ToString("dd MMM yyyy")</span>
+                    </div>
+
+                    <div class="details-info-item full-width">
+                        <label>Issue Title</label>
+                        <span class="details-issue-title">@Model.IssueTitle</span>
+                    </div>
+
+                    <div class="details-info-item full-width">
+                        <label>Issue Description</label>
+                        <div class="details-description">
+                            @(string.IsNullOrWhiteSpace(Model.IssueDescription)
+                                ? "No issue description provided."
+                                : Model.IssueDescription)
+                        </div>
+                    </div>
+
+                    <div class="details-info-item full-width">
+                        <label>Customer Notes</label>
+                        <div class="details-description">
+                            @(string.IsNullOrWhiteSpace(Model.CustomerNotes)
+                                ? "No additional customer notes."
+                                : Model.CustomerNotes)
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Customer Information -->
+            <div class="details-card">
+
+                <div class="details-card-header">
+                    <div class="details-card-icon purple-icon">
+                        <i class="bi bi-person"></i>
+                    </div>
+                    <div>
+                        <h4>Customer Information</h4>
+                        <p>Customer who submitted this request</p>
+                    </div>
+                </div>
+
+                <div class="details-info-grid">
+
+                    <div class="details-info-item">
+                        <label>Customer Name</label>
+                        <span>@Model.CustomerName</span>
+                    </div>
+
+                    <div class="details-info-item">
+                        <label>Email Address</label>
+                        <span>@Model.CustomerEmail</span>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Product Information -->
+            <div class="details-card">
+
+                <div class="details-card-header">
+                    <div class="details-card-icon green-icon">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+                    <div>
+                        <h4>Product Information</h4>
+                        <p>Product associated with this service request</p>
+                    </div>
+                </div>
+
+                <div class="details-info-grid">
+
+                    <div class="details-info-item">
+                        <label>Product Name</label>
+                        <span>@Model.ProductName</span>
+                    </div>
+
+                    <div class="details-info-item">
+                        <label>Serial Number</label>
+                        <span class="serial-number">@Model.SerialNumber</span>
+                    </div>
+
+                    <div class="details-info-item">
+                        <label>Purchase Date</label>
+                        <span>@Model.PurchaseDate.ToString("dd MMM yyyy")</span>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Admin Remarks -->
+            <div class="details-card">
+
+                <div class="details-card-header">
+                    <div class="details-card-icon orange-icon">
+                        <i class="bi bi-chat-left-text"></i>
+                    </div>
+                    <div>
+                        <h4>Admin Remarks</h4>
+                        <p>Internal administrative remarks</p>
+                    </div>
+                </div>
+
+                <div class="details-notes-box">
+                    @(string.IsNullOrWhiteSpace(Model.AdminRemarks)
+                        ? "No admin remarks added yet."
+                        : Model.AdminRemarks)
+                </div>
+            </div>
+
+            <!-- Staff Notes -->
+            <div class="details-card">
+
+                <div class="details-card-header">
+                    <div class="details-card-icon teal-icon">
+                        <i class="bi bi-tools"></i>
+                    </div>
+                    <div>
+                        <h4>Staff Notes</h4>
+                        <p>Technical notes from assigned staff</p>
+                    </div>
+                </div>
+
+                <div class="details-notes-box">
+                    @(string.IsNullOrWhiteSpace(Model.StaffNotes)
+                        ? "No staff notes added yet."
+                        : Model.StaffNotes)
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column -->
+        <div class="details-sidebar-column">
+
+            <!-- Status Card -->
+            <div class="details-card status-overview-card">
+
+                <div class="details-card-header">
+                    <div class="details-card-icon blue-icon">
+                        <i class="bi bi-activity"></i>
+                    </div>
+                    <div>
+                        <h4>Request Overview</h4>
+                        <p>Current request status</p>
+                    </div>
+                </div>
+
+                <div class="status-overview-content">
+                    <label>Current Status</label>
+
+                    <span class="details-status-badge @statusClass">
+                        @Model.Status
+                    </span>
+
+                    <div class="status-overview-divider"></div>
+
+                    <label>Request Number</label>
+                    <strong>#SR-@Model.ServiceRequestId</strong>
+
+                    <label>Submitted On</label>
+                    <strong>@Model.RequestDate.ToString("dd MMM yyyy")</strong>
+                </div>
+            </div>
+
+            <!-- Warranty Card -->
+            <div class="details-card warranty-details-card">
+
+                <div class="details-card-header">
+                    <div class="details-card-icon orange-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <div>
+                        <h4>Warranty Information</h4>
+                        <p>Product warranty coverage</p>
+                    </div>
+                </div>
+
+                @if (hasWarranty)
+                {
+                    <div class="warranty-information">
+
+                        <div class="warranty-status-row">
+                            <span>Warranty Status</span>
+
+                            @if (Model.IsWarrantyActive)
+                            {
+                                <span class="warranty-badge active">
+                                    <i class="bi bi-check-circle"></i>
+                                    Active
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="warranty-badge inactive">
+                                    <i class="bi bi-x-circle"></i>
+                                    Inactive
+                                </span>
+                            }
+                        </div>
+
+                        <div class="warranty-date-item">
+                            <label>Start Date</label>
+                            <strong>
+                                @Model.WarrantyStartDate?.ToString("dd MMM yyyy")
+                            </strong>
+                        </div>
+
+                        <div class="warranty-date-item">
+                            <label>End Date</label>
+                            <strong>
+                                @Model.WarrantyEndDate?.ToString("dd MMM yyyy")
+                            </strong>
+                        </div>
+
+                    </div>
+                }
+                else
+                {
+                    <div class="warranty-empty-state">
+                        <i class="bi bi-shield-x"></i>
+                        <p>Warranty information is unavailable.</p>
+                    </div>
+                }
+
+            </div>
+
+            <!-- Assigned Staff Card -->
+            <div class="details-card staff-details-card">
+
+                <div class="details-card-header">
+                    <div class="details-card-icon purple-icon">
+                        <i class="bi bi-person-badge"></i>
+                    </div>
+                    <div>
+                        <h4>Staff Assignment</h4>
+                        <p>Technician responsible for the request</p>
+                    </div>
+                </div>
+
+                <div class="staff-assignment-info">
+                    <label>Assigned Staff</label>
+
+                    <div class="staff-name-box">
+                        <i class="bi bi-person-circle"></i>
+                        <span>@Model.AssignedStaffName</span>
+                    </div>
+
+                    @if (Model.AssignedStaffName == "Not Assigned")
+                    {
+                        <div class="staff-unassigned-notice">
+                            <i class="bi bi-info-circle"></i>
+                            This request has not been assigned to any staff member.
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Service Request Details Styles -->
+<style>
+
+    /* Main page */
+    .request-details-page {
+        padding: 5px;
+        color: #1e293b;
+    }
+
+    /* Page header */
+    .details-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .details-back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #64748b;
+        text-decoration: none;
+        font-size: 13px;
+        margin-bottom: 15px;
+        transition: color 0.2s;
+    }
+
+        .details-back-link:hover {
+            color: #2563eb;
+        }
+
+    .details-page-header h2 {
+        font-size: 25px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .details-page-header p {
+        color: #64748b;
+        font-size: 13px;
+        margin: 5px 0 0;
+    }
+
+    .details-header-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .details-request-number {
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    /* Main layout */
+    .details-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr);
+        gap: 20px;
+        align-items: start;
+    }
+
+    .details-main-column,
+    .details-sidebar-column {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        min-width: 0;
+    }
+
+    /* Cards */
+    .details-card {
+        background: #ffffff;
+        border: 1px solid #e5eaf1;
+        border-radius: 12px;
+        padding: 22px;
+        box-shadow: 0 2px 5px rgba(15, 23, 42, 0.035);
+    }
+
+    /* Card header */
+    .details-card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 22px;
+    }
+
+        .details-card-header h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin: 0;
+            color: #1e293b;
+        }
+
+        .details-card-header p {
+            font-size: 12px;
+            color: #64748b;
+            margin: 4px 0 0;
+        }
+
+    /* Card icons */
+    .details-card-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .blue-icon {
+        background: #eff6ff;
+        color: #2563eb;
+    }
+
+    .purple-icon {
+        background: #f3e8ff;
+        color: #9333ea;
+    }
+
+    .green-icon {
+        background: #ecfdf5;
+        color: #059669;
+    }
+
+    .orange-icon {
+        background: #fff7ed;
+        color: #f59e0b;
+    }
+
+    .teal-icon {
+        background: #ecfeff;
+        color: #0891b2;
+    }
+
+    /* Information grid */
+    .details-info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .details-info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        min-width: 0;
+    }
+
+        .details-info-item.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .details-info-item label,
+        .status-overview-content label,
+        .staff-assignment-info label {
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .details-info-item > span {
+            color: #1e293b;
+            font-size: 13px;
+            font-weight: 600;
+            word-break: break-word;
+        }
+
+    .details-issue-title {
+        font-size: 15px !important;
+    }
+
+    .details-description {
+        background: #f8fafc;
+        border: 1px solid #e9eef5;
+        border-radius: 8px;
+        padding: 13px;
+        color: #475569;
+        font-size: 13px;
+        line-height: 1.7;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .serial-number {
+        font-family: monospace;
+        letter-spacing: 0.3px;
+    }
+
+    /* Notes */
+    .details-notes-box {
+        background: #f8fafc;
+        border: 1px solid #e9eef5;
+        border-radius: 8px;
+        padding: 14px;
+        color: #475569;
+        font-size: 13px;
+        line-height: 1.7;
+        min-height: 55px;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    /* Status badges */
+    .details-status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 11px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+        .details-status-badge.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .details-status-badge.assigned {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .details-status-badge.inprogress {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .details-status-badge.in-progress {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .details-status-badge.completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .details-status-badge.rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .details-status-badge.cancelled {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+    /* Request overview */
+    .status-overview-content {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+        .status-overview-content strong {
+            color: #1e293b;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+    .status-overview-divider {
+        height: 1px;
+        background: #e9eef5;
+        margin: 5px 0;
+    }
+
+    /* Warranty */
+    .warranty-information {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .warranty-status-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+        .warranty-status-row > span:first-child {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+    .warranty-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 9px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+        .warranty-badge.active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .warranty-badge.inactive {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+    .warranty-date-item {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+        .warranty-date-item label {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .warranty-date-item strong {
+            color: #1e293b;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+    .warranty-empty-state {
+        padding: 20px 10px;
+        text-align: center;
+        color: #94a3b8;
+    }
+
+        .warranty-empty-state i {
+            font-size: 28px;
+        }
+
+        .warranty-empty-state p {
+            font-size: 12px;
+            margin: 8px 0 0;
+        }
+
+    /* Staff assignment */
+    .staff-assignment-info {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .staff-name-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px;
+        background: #f8fafc;
+        border: 1px solid #e9eef5;
+        border-radius: 8px;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+        .staff-name-box i {
+            font-size: 20px;
+            color: #64748b;
+        }
+
+    .staff-unassigned-notice {
+        display: flex;
+        align-items: flex-start;
+        gap: 7px;
+        background: #fff7ed;
+        color: #9a3412;
+        padding: 10px;
+        border-radius: 7px;
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+        .staff-unassigned-notice i {
+            margin-top: 1px;
+            flex-shrink: 0;
+        }
+
+    /* Responsive layout */
+    @@media (max-width: 1100px) {
+        .details-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .details-sidebar-column {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            align-items: start;
+        }
+
+        .status-overview-card {
+            grid-column: 1 / -1;
+        }
+    }
+
+    @@media (max-width: 650px) {
+        .details-page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .details-header-right {
+            width: 100%;
+            justify-content: flex-start;
+        }
+
+        .details-sidebar-column {
+            grid-template-columns: 1fr;
+        }
+
+        .status-overview-card {
+            grid-column: auto;
+        }
+
+        .details-info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .details-info-item.full-width {
+            grid-column: auto;
+        }
+
+        .details-card {
+            padding: 17px;
+        }
+    }
+
+</style>

@@ -1,0 +1,559 @@
+﻿@model DWS.Web.UI.Models.ViewModels.AdminServiceRequestViewModel
+
+@{
+    // Use the admin layout for the sidebar and top navigation.
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    // Calculate service request statistics.
+    var totalRequests = Model.ServiceRequests?.Count ?? 0;
+    var pendingCount = Model.ServiceRequests?.Count(s => s.Status == "Pending") ?? 0;
+    var inProgressCount = Model.ServiceRequests?.Count(s => s.Status == "InProgress") ?? 0;
+    var completedCount = Model.ServiceRequests?.Count(s => s.Status == "Completed") ?? 0;
+}
+
+<div class="admin-service-requests">
+
+    <!-- Page Header -->
+    <div class="service-page-header">
+        <div>
+            <h2>Service Requests</h2>
+            <p>Manage customer service and repair requests.</p>
+        </div>
+
+        <a asp-controller="Admin"
+           asp-action="Dashboard"
+           class="back-dashboard-btn">
+            <i class="bi bi-arrow-left"></i>
+            Dashboard
+        </a>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="service-stats-grid">
+
+        <!-- Total Requests -->
+        <div class="service-stat-card">
+            <div>
+                <span class="service-stat-title">Total Requests</span>
+                <h3>@totalRequests</h3>
+            </div>
+            <div class="service-stat-icon blue">
+                <i class="bi bi-clipboard-check"></i>
+            </div>
+        </div>
+
+        <!-- Pending Requests -->
+        <div class="service-stat-card">
+            <div>
+                <span class="service-stat-title">Pending</span>
+                <h3>@pendingCount</h3>
+            </div>
+            <div class="service-stat-icon orange">
+                <i class="bi bi-clock"></i>
+            </div>
+        </div>
+
+        <!-- In Progress Requests -->
+        <div class="service-stat-card">
+            <div>
+                <span class="service-stat-title">In Progress</span>
+                <h3>@inProgressCount</h3>
+            </div>
+            <div class="service-stat-icon purple">
+                <i class="bi bi-tools"></i>
+            </div>
+        </div>
+
+        <!-- Completed Requests -->
+        <div class="service-stat-card">
+            <div>
+                <span class="service-stat-title">Completed</span>
+                <h3>@completedCount</h3>
+            </div>
+            <div class="service-stat-icon green">
+                <i class="bi bi-check-circle"></i>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Service Requests Table Panel -->
+    <div class="service-requests-panel">
+
+        <!-- Panel Header -->
+        <div class="service-table-header">
+            <div>
+                <h4>All Service Requests</h4>
+                <p>View and manage customer service requests.</p>
+            </div>
+
+            <span class="request-count-badge">
+                @totalRequests Requests
+            </span>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="service-requests-table">
+
+                <thead>
+                    <tr>
+                        <th>Request ID</th>
+                        <th>Customer</th>
+                        <th>Product</th>
+                        <th>Issue</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Assigned Staff</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (Model.ServiceRequests != null && Model.ServiceRequests.Any())
+                    {
+                        // Display all service requests.
+                        foreach (var request in Model.ServiceRequests)
+                        {
+                            // Generate a CSS class from the request status.
+                            var statusClass = request.Status.ToLower().Replace(" ", "-");
+
+                            <tr>
+                                <!-- Request ID -->
+                                <td>
+                                    <span class="request-id">
+                                        #SR-@request.ServiceRequestId
+                                    </span>
+                                </td>
+
+                                <!-- Customer Information -->
+                                <td>
+                                    <div class="customer-cell">
+                                        <span class="customer-name">
+                                            @request.CustomerName
+                                        </span>
+                                        <span class="customer-email">
+                                            @request.CustomerEmail
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <!-- Product Information -->
+                                <td>
+                                    <div class="product-cell">
+                                        <span class="product-name">
+                                            @request.ProductName
+                                        </span>
+                                        <span class="product-serial">
+                                            SN: @request.SerialNumber
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <!-- Issue Information -->
+                                <td>
+                                    <span class="issue-title">
+                                        @request.IssueTitle
+                                    </span>
+                                </td>
+
+                                <!-- Request Date -->
+                                <td>
+                                    @request.RequestDate.ToString("dd MMM yyyy")
+                                </td>
+
+                                <!-- Status -->
+                                <td>
+                                    <span class="request-status @statusClass">
+                                        @request.Status
+                                    </span>
+                                </td>
+
+                                <!-- Assigned Staff -->
+                                <td>
+                                    <span class="assigned-staff">
+                                        @request.AssignedStaffName
+                                    </span>
+                                </td>
+
+                                <!-- Request Actions -->
+                                <td>
+                                    <a asp-controller="Admin"
+                                       asp-action="Details"
+                                       asp-route-id="@request.ServiceRequestId"
+                                       class="view-details-btn">
+                                        <i class="bi bi-eye"></i>
+                                        View Details
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        // Display an empty state when no requests exist.
+                        <tr>
+                            <td colspan="8">
+                                <div class="empty-requests">
+                                    <i class="bi bi-inbox"></i>
+                                    <h5>No Service Requests Found</h5>
+                                    <p>There are currently no service requests to display.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Service Requests Page CSS -->
+<style>
+
+    /* Main container */
+    .admin-service-requests {
+        padding: 5px;
+        color: #1e293b;
+    }
+
+    /* Page header */
+    .service-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 24px;
+    }
+
+        .service-page-header h2 {
+            font-size: 27px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .service-page-header p {
+            color: #64748b;
+            font-size: 14px;
+            margin: 5px 0 0;
+        }
+
+    /* Dashboard navigation button */
+    .back-dashboard-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 10px 14px;
+        border: 1px solid #2563eb;
+        border-radius: 7px;
+        color: #2563eb;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+        .back-dashboard-btn:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+    /* Statistics cards */
+    .service-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .service-stat-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+        border: 1px solid #e5eaf1;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(15, 23, 42, 0.04);
+    }
+
+    .service-stat-title {
+        color: #64748b;
+        font-size: 13px;
+    }
+
+    .service-stat-card h3 {
+        color: #0f172a;
+        font-size: 27px;
+        font-weight: 700;
+        margin: 8px 0 0;
+    }
+
+    /* Statistics icons */
+    .service-stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 9px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 21px;
+    }
+
+        .service-stat-icon.blue {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .service-stat-icon.orange {
+            background: #fff7ed;
+            color: #f59e0b;
+        }
+
+        .service-stat-icon.purple {
+            background: #f3e8ff;
+            color: #9333ea;
+        }
+
+        .service-stat-icon.green {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+    /* Table panel */
+    .service-requests-panel {
+        background: #ffffff;
+        border: 1px solid #e5eaf1;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(15, 23, 42, 0.04);
+        margin-bottom: 20px;
+    }
+
+    /* Table header */
+    .service-table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+        .service-table-header h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .service-table-header p {
+            color: #64748b;
+            font-size: 12px;
+            margin: 5px 0 0;
+        }
+
+    /* Request count */
+    .request-count-badge {
+        background: #eff6ff;
+        color: #2563eb;
+        padding: 7px 11px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    /* Requests table */
+    .service-requests-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
+
+        .service-requests-table thead {
+            background: #f8fafc;
+        }
+
+        .service-requests-table th {
+            text-align: left;
+            padding: 13px 12px;
+            font-weight: 600;
+            color: #334155;
+            border-bottom: 1px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        .service-requests-table td {
+            padding: 13px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+
+        .service-requests-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+    /* Request ID */
+    .request-id {
+        color: #2563eb;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    /* Customer and product cells */
+    .customer-cell,
+    .product-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 120px;
+    }
+
+    .customer-name,
+    .product-name {
+        color: #1e293b;
+        font-weight: 600;
+    }
+
+    .customer-email,
+    .product-serial {
+        color: #64748b;
+        font-size: 11px;
+    }
+
+    /* Issue title */
+    .issue-title {
+        color: #334155;
+        min-width: 130px;
+        display: inline-block;
+    }
+
+    /* Assigned staff */
+    .assigned-staff {
+        color: #64748b;
+        white-space: nowrap;
+    }
+
+    /* Status badges */
+    .request-status {
+        display: inline-block;
+        padding: 5px 9px;
+        border-radius: 5px;
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+        .request-status.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .request-status.assigned {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .request-status.in-progress {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .request-status.completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .request-status.rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .request-status.cancelled {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+    /* View Details Action */
+    .view-details-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 8px 12px;
+        border: 1px solid #dbeafe;
+        border-radius: 7px;
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: all 0.2s ease;
+    }
+
+        .view-details-btn:hover {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.15);
+        }
+
+    /* Empty state */
+    .empty-requests {
+        min-height: 240px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: #94a3b8;
+    }
+
+        .empty-requests i {
+            font-size: 42px;
+            margin-bottom: 12px;
+        }
+
+        .empty-requests h5 {
+            color: #475569;
+            font-size: 15px;
+            margin: 0 0 6px;
+        }
+
+        .empty-requests p {
+            font-size: 12px;
+            margin: 0;
+        }
+
+    /* Tablet responsive layout */
+    @@media (max-width: 1100px) {
+        .service-stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    /* Mobile responsive layout */
+    @@media (max-width: 600px) {
+        .service-page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .service-stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .service-requests-panel {
+            padding: 15px;
+        }
+
+        .service-requests-table {
+            min-width: 1100px;
+        }
+    }
+
+</style>

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DWS.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20261122175014_SeedCourses")]
+    [Migration("20261124121719_SeedCourses")]
     partial class SeedCourses
     {
         /// <inheritdoc />
