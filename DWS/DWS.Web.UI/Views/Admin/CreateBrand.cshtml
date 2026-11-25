@@ -1,0 +1,235 @@
+﻿@model DWS.Web.UI.Models.ViewModels.CreateBrandViewModel
+
+@{
+    ViewData["Title"] = "Create Brand";
+    Layout = "_AdminLayout";
+}
+
+<style>
+    .brand-form-container {
+        padding: 24px;
+    }
+
+    .brand-form-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 28px;
+        max-width: 850px;
+        margin: 0 auto;
+    }
+
+    .brand-form-header {
+        margin-bottom: 25px;
+    }
+
+        .brand-form-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .brand-form-header p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+    .form-label {
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 8px;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        padding: 11px 14px;
+        border: 1px solid #dbe2ea;
+    }
+
+        .form-control:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+    .form-group {
+        margin-bottom: 22px;
+    }
+
+    .brand-status-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 16px;
+    }
+
+        .brand-status-box .form-check-label {
+            font-weight: 600;
+            color: #334155;
+        }
+
+    .brand-form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding-top: 20px;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .btn-brand-save {
+        background: #4f46e5;
+        color: white;
+        border: none;
+        padding: 11px 22px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+        .btn-brand-save:hover {
+            background: #4338ca;
+            color: white;
+        }
+
+    .btn-brand-cancel {
+        background: #fff;
+        color: #475569;
+        border: 1px solid #dbe2ea;
+        padding: 11px 22px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+        .btn-brand-cancel:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+    .validation-message {
+        color: #dc2626;
+        font-size: 13px;
+        margin-top: 5px;
+    }
+
+    @@media (max-width: 768px) {
+        .brand-form-container {
+            padding: 14px;
+        }
+
+        .brand-form-card {
+            padding: 20px;
+        }
+
+        .brand-form-actions {
+            flex-direction: column-reverse;
+        }
+
+            .brand-form-actions a,
+            .brand-form-actions button {
+                width: 100%;
+                text-align: center;
+            }
+    }
+</style>
+
+<div class="brand-form-container">
+
+    <div class="brand-form-card">
+
+        <div class="brand-form-header">
+            <h2>
+                <i class="bi bi-award me-2"></i>
+                Create New Brand
+            </h2>
+
+            <p>Add a new manufacturer or product brand to your warranty portal.</p>
+        </div>
+
+        <form asp-controller="Admin"
+              asp-action="CreateBrand"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly"
+                 class="alert alert-danger"
+                 role="alert">
+            </div>
+
+            <!-- Brand Name -->
+            <div class="form-group">
+                <label asp-for="Name" class="form-label">
+                    Brand Name <span class="text-danger">*</span>
+                </label>
+
+                <input asp-for="Name"
+                       class="form-control"
+                       placeholder="Enter brand name (e.g. Samsung, Apple)" />
+
+                <span asp-validation-for="Name"
+                      class="validation-message"></span>
+            </div>
+
+            <!-- Description -->
+            <div class="form-group">
+                <label asp-for="Description" class="form-label">
+                    Description
+                </label>
+
+                <textarea asp-for="Description"
+                          class="form-control"
+                          rows="4"
+                          placeholder="Enter a short description about this brand..."></textarea>
+
+                <span asp-validation-for="Description"
+                      class="validation-message"></span>
+            </div>
+
+            <!-- Brand Status -->
+            <div class="form-group">
+                <div class="brand-status-box">
+                    <div class="form-check form-switch">
+                        <input asp-for="IsActive"
+                               class="form-check-input"
+                               type="checkbox" />
+
+                        <label asp-for="IsActive"
+                               class="form-check-label">
+                            Active Brand
+                        </label>
+                    </div>
+
+                    <small class="text-muted d-block mt-2">
+                        Active brands will be available when creating products.
+                    </small>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="brand-form-actions">
+
+                <a asp-controller="Admin"
+                   asp-action="BrandsCategories"
+                   class="btn-brand-cancel">
+                    <i class="bi bi-arrow-left me-1"></i>
+                    Cancel
+                </a>
+
+                <button type="submit" class="btn-brand-save">
+                    <i class="bi bi-check-lg me-1"></i>
+                    Save Brand
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

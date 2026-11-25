@@ -1,0 +1,517 @@
+﻿@model DWS.Web.UI.Models.ViewModels.AdminBrandsCategoriesViewModel
+
+@{
+    ViewData["Title"] = "Brands & Categories";
+    Layout = "_AdminLayout";
+}
+
+<style>
+    .bc-container {
+        padding: 24px;
+    }
+
+    .bc-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+        .bc-header h2 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 6px;
+        }
+
+        .bc-header p {
+            color: #64748b;
+            font-size: 14px;
+            margin: 0;
+        }
+
+    .bc-back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border: 1px solid #dbe2ea;
+        border-radius: 8px;
+        background: white;
+        color: #334155;
+        text-decoration: none;
+        font-weight: 600;
+        transition: .2s;
+    }
+
+        .bc-back-btn:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+    .bc-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-bottom: 25px;
+    }
+
+    .bc-stat-card {
+        background: white;
+        border: 1px solid #e5eaf0;
+        border-radius: 12px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        box-shadow: 0 3px 12px rgba(15, 23, 42, 0.03);
+    }
+
+    .bc-stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 21px;
+        flex-shrink: 0;
+    }
+
+        .bc-stat-icon.brands {
+            background: #eef2ff;
+            color: #4f46e5;
+        }
+
+        .bc-stat-icon.categories {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .bc-stat-icon.inactive {
+            background: #fff7ed;
+            color: #ea580c;
+        }
+
+    .bc-stat-card h3 {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0;
+    }
+
+    .bc-stat-card p {
+        font-size: 13px;
+        color: #64748b;
+        margin: 4px 0 0;
+    }
+
+    .bc-section-card {
+        background: white;
+        border: 1px solid #e5eaf0;
+        border-radius: 13px;
+        overflow: hidden;
+        margin-bottom: 25px;
+        box-shadow: 0 3px 12px rgba(15, 23, 42, 0.03);
+    }
+
+    .bc-section-header {
+        padding: 20px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        border-bottom: 1px solid #e9edf3;
+        background: #f8fafc;
+    }
+
+    .bc-section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+        .bc-section-title h5 {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .bc-section-title p {
+            font-size: 13px;
+            color: #64748b;
+            margin: 4px 0 0;
+        }
+
+    .bc-count {
+        background: #eef2ff;
+        color: #4f46e5;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .bc-add-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #4f46e5;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: .2s;
+    }
+
+        .bc-add-btn:hover {
+            background: #4338ca;
+            color: white;
+        }
+
+    .bc-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .bc-table {
+        width: 100%;
+        min-width: 700px;
+        border-collapse: collapse;
+    }
+
+        .bc-table thead th {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            padding: 14px 20px;
+            border-bottom: 1px solid #e9edf3;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .bc-table tbody td {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        .bc-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .bc-table tbody tr:hover {
+            background: #fafcff;
+        }
+
+    .bc-name {
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .bc-id {
+        color: #64748b;
+        font-weight: 600;
+    }
+
+    .bc-description {
+        max-width: 280px;
+        color: #64748b;
+    }
+
+    .bc-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+        .bc-status.active {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .bc-status.inactive {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+    .bc-status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    .bc-empty-state {
+        text-align: center;
+        padding: 45px 20px !important;
+    }
+
+    .bc-empty-icon {
+        width: 55px;
+        height: 55px;
+        background: #f1f5f9;
+        color: #94a3b8;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 23px;
+        margin: 0 auto 12px;
+    }
+
+    .bc-empty-state h6 {
+        color: #334155;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .bc-empty-state p {
+        color: #94a3b8;
+        font-size: 13px;
+        margin: 0;
+    }
+
+    .bc-date {
+        color: #64748b;
+        white-space: nowrap;
+    }
+
+    @@media (max-width: 768px) {
+        .bc-container {
+            padding: 15px;
+        }
+
+        .bc-header h2 {
+            font-size: 22px;
+        }
+
+        .bc-stats {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .bc-section-header {
+            padding: 16px;
+        }
+    }
+</style>
+
+<div class="bc-container">
+
+    <!-- Page Header -->
+    <div class="bc-header">
+        <div>
+            <h2>Brands & Categories</h2>
+            <p>Manage product brands and categories in your warranty portal.</p>
+        </div>
+
+        <a asp-controller="Admin"
+           asp-action="Dashboard"
+           class="bc-back-btn">
+            <i class="bi bi-arrow-left"></i>
+            Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Statistics -->
+    <div class="bc-stats">
+
+        <div class="bc-stat-card">
+            <div class="bc-stat-icon brands">
+                <i class="bi bi-award"></i>
+            </div>
+            <div>
+                <h3>@Model.Brands.Count</h3>
+                <p>Total Brands</p>
+            </div>
+        </div>
+
+        <div class="bc-stat-card">
+            <div class="bc-stat-icon categories">
+                <i class="bi bi-grid"></i>
+            </div>
+            <div>
+                <h3>@Model.Categories.Count</h3>
+                <p>Total Categories</p>
+            </div>
+        </div>
+
+        <div class="bc-stat-card">
+            <div class="bc-stat-icon inactive">
+                <i class="bi bi-slash-circle"></i>
+            </div>
+            <div>
+                <h3>
+                    @(Model.Brands.Count(b => !b.IsActive) +
+                      Model.Categories.Count(c => !c.IsActive))
+                </h3>
+                <p>Inactive Items</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Brands Section -->
+    <div class="bc-section-card">
+
+        <div class="bc-section-header">
+            <div class="bc-section-title">
+                <div>
+                    <h5><i class="bi bi-award me-2"></i>Brands</h5>
+                    <p>Manage product manufacturers and brand information.</p>
+                </div>
+                <span class="bc-count">@Model.Brands.Count</span>
+            </div>
+
+            <a asp-controller="Admin"
+               asp-action="CreateBrand"
+               class="btn-add">
+                <i class="bi bi-plus-lg"></i>
+                Add Brand
+            </a>
+        </div>
+
+        <div class="bc-table-wrapper">
+            <table class="bc-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Brand Name</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.Brands.Any())
+                    {
+                        @foreach (var brand in Model.Brands)
+                        {
+                            <tr>
+                                <td class="bc-id">#@brand.BrandId</td>
+                                <td class="bc-name">@brand.Name</td>
+                                <td class="bc-description">
+                                    @(string.IsNullOrWhiteSpace(brand.Description)
+                                        ? "No description"
+                                        : brand.Description)
+                                </td>
+                                <td>
+                                    <span class="bc-status @(brand.IsActive ? "active" : "inactive")">
+                                        <span class="bc-status-dot"></span>
+                                        @(brand.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </td>
+                                <td class="bc-date">
+                                    @brand.CreatedAt.ToString("dd MMM yyyy")
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="bc-empty-state">
+                                <div class="bc-empty-icon">
+                                    <i class="bi bi-award"></i>
+                                </div>
+                                <h6>No Brands Found</h6>
+                                <p>There are no brands in the database yet.</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- Categories Section -->
+    <div class="bc-section-card">
+
+        <div class="bc-section-header">
+            <div class="bc-section-title">
+                <div>
+                    <h5><i class="bi bi-grid me-2"></i>Categories</h5>
+                    <p>Organize products into categories for easier management.</p>
+                </div>
+                <span class="bc-count">@Model.Categories.Count</span>
+            </div>
+
+            <a href="#" class="bc-add-btn">
+                <i class="bi bi-plus-lg"></i>
+                Add Category
+            </a>
+        </div>
+
+        <div class="bc-table-wrapper">
+            <table class="bc-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Category Name</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.Categories.Any())
+                    {
+                        @foreach (var category in Model.Categories)
+                        {
+                            <tr>
+                                <td class="bc-id">#@category.CategoryId</td>
+                                <td class="bc-name">@category.Name</td>
+                                <td class="bc-description">
+                                    @(string.IsNullOrWhiteSpace(category.Description)
+                                        ? "No description"
+                                        : category.Description)
+                                </td>
+                                <td>
+                                    <span class="bc-status @(category.IsActive ? "active" : "inactive")">
+                                        <span class="bc-status-dot"></span>
+                                        @(category.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </td>
+                                <td class="bc-date">
+                                    @category.CreatedAt.ToString("dd MMM yyyy")
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="bc-empty-state">
+                                <div class="bc-empty-icon">
+                                    <i class="bi bi-grid"></i>
+                                </div>
+                                <h6>No Categories Found</h6>
+                                <p>There are no categories in the database yet.</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
